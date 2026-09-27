@@ -1,0 +1,68 @@
+[project]
+name = "nfbench"
+version = "0.2.0"
+description = "Benchmark local LLMs (Ollama / LM Studio) on hotel-booking cancellation analysis, presented in marimo"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "marimo>=0.25",
+    "polars>=1.0",
+    "pyarrow>=15",
+    "altair>=5",
+    "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "import-linter>=2.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs a running Ollama or LM Studio server (deselect with -m 'not integration')"]
+addopts = "-m 'not integration'"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RET", "PL", "PT"]
+ignore = ["PLR2004", "PLR0913", "PLR0917"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR0915"]
+"notebooks/**" = ["E501", "F811", "B018", "PLR0915", "PLR0912", "PLC0415", "E731"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["src", "tests"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["polars.*", "psutil.*"]
+ignore_missing_imports = true
+
+[tool.importlinter]
+root_package = "nfbench"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Clean Architecture layers"
+type = "layers"
+layers = ["nfbench.bootstrap", "nfbench.adapters | nfbench.infrastructure", "nfbench.application", "nfbench.domain"]
+containers = []
+exhaustive = false
+
+[[tool.importlinter.contracts]]
+name = "Domain and application stay free of dataframes and IO libraries"
+type = "forbidden"
+source_modules = ["nfbench.domain", "nfbench.application"]
+forbidden_modules = ["polars", "pandas", "psutil", "altair", "marimo"]
