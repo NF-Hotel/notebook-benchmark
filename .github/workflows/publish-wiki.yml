@@ -1,0 +1,52 @@
+name: Publish wiki
+
+# docs/wiki/ is the source of truth; this copies it to the GitHub wiki on every
+# change merged to main. The wiki repo is created by GitHub when the first wiki
+# page is saved once in the web UI (a one-time step).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/wiki/**"
+      - ".github/workflows/publish-wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
+      - name: Check out the wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync pages
+        run: rsync -a --delete --exclude '.git' repo/docs/wiki/ wiki/
+
+      - name: Commit and push
+        working-directory: wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki is up to date."
+            exit 0
+          fi
+          git commit -m "Sync wiki from ${GITHUB_SHA::7}"
+          git push
