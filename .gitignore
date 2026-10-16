@@ -26,3 +26,5 @@ htmlcov/
 
 # Synthetic demo data is tracked
 !data/example/synthetic_hotel_bookings.csv
+
+.vs/
