@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [1f68247] |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
 
 ---
 
@@ -30,7 +30,7 @@
 | 2 | Context states the problem, the forces and the options evaluated | Pass | Contract between two services; forces: minutes-long run, shared VM, no database in the service, tokens; three options for delivery |
 | 3 | At least two options were considered | Pass | Push, poll and shared database considered |
 | 4 | Decision is stated plainly and matches one of the evaluated options | Pass | Option 1 (push with retry), then bullets for start, queue, delivery, retry, body, tokens and network |
-| 5 | Consequences list both Positive and Negative outcomes | Pass | Five positive and four negative consequences |
+| 5 | Consequences list both Positive and Negative outcomes | Pass | Four positive and four negative consequences |
 | 6 | Quality-attribute impacts are named where the decision affects them | Pass | Quality attributes named in the added line |
 | 7 | Affected Artifacts are listed as links, and each is also in CrossReference | Pass | BC-001 and MIL-001 in both lists |
 | 8 | Status changes are recorded as new Version History rows | Pass | `Proposed`, then `Accepted` after this review |
