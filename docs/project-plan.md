@@ -11,7 +11,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | pending |
+| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 
 ---
 
@@ -92,3 +92,4 @@ NFHotel MIL-019 and MIL-020 build against the contract of MIL-001, so a No-Go on
 [MIL-002]: ./milestones/mil-002-benchmark-service-api.md
 [MIL-003]: ./milestones/mil-003-containers-and-deploy.md
 [MIL-004]: ./milestones/mil-004-prove-it-in-the-vm.md
+[ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224

@@ -11,7 +11,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | pending |
+| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 
 ---
 
@@ -79,3 +79,4 @@ Run the benchmark service and Ollama as containers on the Proxmox VM, beside the
 [BC-001]: ../business-case.md
 [SA-001]: ../stakeholder-analysis.md
 [MIL-002]: ./mil-002-benchmark-service-api.md
+[ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224

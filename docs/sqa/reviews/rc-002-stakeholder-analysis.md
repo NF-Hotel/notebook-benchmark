@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [ed03191] |
 
 ---
 
@@ -67,3 +67,4 @@ Go — every mandatory criterion of QC-SA-001 passes; criterion 5 of QC-LANG-001
 [SA-001]: ../../stakeholder-analysis.md
 [QC-SA-001]: ../../../framework/qc/artifacts/qc-stakeholder-analysis.md
 [QC-LANG-001]: ../../../framework/qc/artifacts/qc-language-domain.md
+[ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
