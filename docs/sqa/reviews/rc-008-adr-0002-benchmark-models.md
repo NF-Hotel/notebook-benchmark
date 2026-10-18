@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [91f6a6d] |
 
 ---
 
@@ -52,3 +52,4 @@ Go — every mandatory criterion of QC-ADR-001 passes. The review is not indepen
 
 [ADR-0002]: ../../adr/adr-0002-benchmark-models.md
 [QC-ADR-001]: ../../../framework/qc/artifacts/qc-adr.md
+[91f6a6d]: https://github.com/NF-Hotel/notebook-benchmark/commit/91f6a6da19a2d4459f24c36291241ea35e8c14a7
