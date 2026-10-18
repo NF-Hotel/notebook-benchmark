@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [845d52c] |
 
 ---
 
@@ -64,3 +64,4 @@ Go-with-conditions — the Mandatory criterion 17 fails, but not because of this
 [MIL-002]: ../../milestones/mil-002-benchmark-service-api.md
 [ADR-0001]: ../../adr/adr-0001-service-contract.md
 [QC-PY-001]: ../../../framework/qc/code/qc-programming-python.md
+[845d52c]: https://github.com/NF-Hotel/notebook-benchmark/commit/845d52c86d9f1140431dd0638a78bb56f99613ee
