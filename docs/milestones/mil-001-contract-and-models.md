@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-003 Go | [1f68247] |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 4 marked done after RC-007 and RC-008 Go | pending |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 4 marked done after RC-007 and RC-008 Go | [d7167f5] |
 
 ---
 
@@ -90,3 +90,4 @@ Decide, before any code, how the benchmark service and the NFHotel web applicati
 [SA-001]: ../stakeholder-analysis.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [1f68247]: https://github.com/NF-Hotel/notebook-benchmark/commit/1f68247b4234935b22f03dc9ac66ebfa2eeae72c
+[d7167f5]: https://github.com/NF-Hotel/notebook-benchmark/commit/d7167f5ed2bb8277b1c66bc7ade05e8430e6e027

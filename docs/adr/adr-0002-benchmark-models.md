@@ -9,8 +9,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-008 Go | pending |
+| 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [d7167f5] |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-008 Go | [d7167f5] |
 
 Allowed Status values: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, `Superseded by ADR-NNNN`.
 
@@ -74,3 +74,4 @@ Quality attributes: performance efficiency is protected (one model in memory, ru
 [BC-001]: ../business-case.md
 [MIL-001]: ../milestones/mil-001-contract-and-models.md
 [ADR-0001]: ./adr-0001-service-contract.md
+[d7167f5]: https://github.com/NF-Hotel/notebook-benchmark/commit/d7167f5ed2bb8277b1c66bc7ade05e8430e6e027
