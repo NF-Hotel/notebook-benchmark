@@ -12,6 +12,7 @@
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-006 Go | pending |
 
 ---
 
