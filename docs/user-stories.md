@@ -11,8 +11,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-012 Go (Go with conditions) | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [871f21c] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-012 Go (Go with conditions) | [871f21c] |
 
 ---
 
@@ -63,3 +63,4 @@ Both stories are independent (a run can be read without a second one), negotiabl
 [MIL-003]: ./milestones/mil-003-containers-and-deploy.md
 [MIL-004]: ./milestones/mil-004-prove-it-in-the-vm.md
 [UC-001]: ./use-cases/uc-001/uc.md
+[871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99

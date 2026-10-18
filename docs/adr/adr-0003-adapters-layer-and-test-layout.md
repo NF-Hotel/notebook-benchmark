@@ -9,8 +9,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-010 Go | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [871f21c] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-010 Go | [871f21c] |
 
 Allowed Status values: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, `Superseded by ADR-NNNN`.
 
@@ -64,3 +64,4 @@ Quality attributes: maintainability is neutral (the same dependency rule, one mo
 [BC-001]: ../business-case.md
 [MIL-003]: ../milestones/mil-003-containers-and-deploy.md
 [RC-009]: ../sqa/reviews/rc-009-benchmark-service-api-code.md
+[871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99

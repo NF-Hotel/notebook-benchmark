@@ -11,8 +11,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-011 Go | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [871f21c] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-011 Go | [871f21c] |
 
 ---
 
@@ -76,3 +76,4 @@
 [SA-001]: ../../stakeholder-analysis.md
 [BC-001]: ../../business-case.md
 [MIL-002]: ../../milestones/mil-002-benchmark-service-api.md
+[871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99
