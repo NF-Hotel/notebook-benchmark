@@ -28,3 +28,7 @@ htmlcov/
 !data/example/synthetic_hotel_bookings.csv
 
 .vs/
+
+# Settings of the deployed services (tokens); the .example files are tracked
+deploy/*.env
+!deploy/*.env.example

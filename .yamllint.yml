@@ -1,0 +1,10 @@
+# Configuration of yamllint for the YAML files of this repository (compose files and CI
+# workflows). Run: yamllint deploy .github
+extends: default
+
+rules:
+  line-length:
+    max: 110
+  document-start: disable
+  truthy:
+    check-keys: false

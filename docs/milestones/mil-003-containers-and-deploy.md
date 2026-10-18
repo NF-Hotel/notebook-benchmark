@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-005 Go | [1f68247] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-010 to RC-014 | pending |
 
 ---
 
@@ -69,11 +70,11 @@ Run the benchmark service and Ollama as containers on the Proxmox VM, beside the
 
 | # | Task | Summary | Needs its own Use Case/User Story? | Reference |
 | --- | --- | --- | --- | --- |
-| 1 | Dockerfile and Compose | The benchmark and Ollama services, network, volumes, health checks, env examples. | No | |
-| 2 | Model-pull script | Disk check, one model at a time, exit codes; shell tests. | No | |
-| 3 | Deploy script and smoke test | Start, health, 401 without token, a short run to `done`. | No | |
-| 4 | Wiki pages | Start, pull, read a run, troubleshooting. | No | |
-| 5 | Check and review | Reviews against `qc-programming-python`, `qc-programming-shell` and `qc-yaml`. | No | |
+| 1 | Dockerfile and Compose | The benchmark and Ollama services, network, volumes, health checks, env examples. | No | Done: `Dockerfile`, `deploy/docker-compose.yml`, env examples |
+| 2 | Model-pull script | Disk check, one model at a time, exit codes; shell tests. | No | Done: `scripts/pull-models.sh`, `tests/shell/test-pull-models.sh` |
+| 3 | Deploy script and smoke test | Start, health, 401 without token, a short run to `done`. | No | Done: `scripts/deploy.sh`, `scripts/smoke-test.sh`; the run to `done` is proved in MIL-004 |
+| 4 | Wiki pages | Start, pull, read a run, troubleshooting. | No | Done: `docs/wiki/Service.md` |
+| 5 | Check and review | Reviews against `qc-programming-python`, `qc-programming-shell` and `qc-yaml`. | No | Done: RC-010 to RC-014 |
 
 ---
 
