@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-003 Go | [1f68247] |
+| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 4 marked done after RC-007 and RC-008 Go | pending |
 
 ---
 
@@ -78,10 +79,10 @@ Decide, before any code, how the benchmark service and the NFHotel web applicati
 
 | # | Task | Summary | Needs its own Use Case/User Story? | Reference |
 | --- | --- | --- | --- | --- |
-| 1 | Write ADR-0001 | The contract between the web application and the benchmark service, with the options considered (push result, pull result, shared database). | No | |
-| 2 | Write the OpenAPI file | `openapi/benchmark-contract.yaml` with the endpoints, schemas and examples; validate it. | No | |
-| 3 | Write ADR-0002 | Model list, sizes, memory check against the VM, and the pull script rules. | No | |
-| 4 | Review both ADRs | Against `qc-adr`; record the `RC-*`. | No | |
+| 1 | Write ADR-0001 | The contract between the web application and the benchmark service, with the options considered (push result, pull result, shared database). | No | Done: ADR-0001, RC-007 |
+| 2 | Write the OpenAPI file | `openapi/benchmark-contract.yaml` with the endpoints, schemas and examples; validate it. | No | Done: `openapi/benchmark-contract.yaml` validates |
+| 3 | Write ADR-0002 | Model list, sizes, memory check against the VM, and the pull script rules. | No | Done: ADR-0002, RC-008 |
+| 4 | Review both ADRs | Against `qc-adr`; record the `RC-*`. | No | Done: RC-007, RC-008 |
 
 ---
 
