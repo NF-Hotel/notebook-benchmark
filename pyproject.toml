@@ -10,10 +10,15 @@ dependencies = [
     "pyarrow>=15",
     "altair>=5",
     "psutil>=5.9",
+    "starlette>=0.37",
+    "uvicorn>=0.30",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "import-linter>=2.0"]
+dev = [
+    "pytest>=8", "ruff>=0.6", "mypy>=1.10", "import-linter>=2.0",
+    "httpx>=0.27", "jsonschema>=4", "pyyaml>=6", "types-PyYAML",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -47,7 +52,7 @@ files = ["src", "tests"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["polars.*", "psutil.*"]
+module = ["polars.*", "psutil.*", "jsonschema.*"]
 ignore_missing_imports = true
 
 [tool.importlinter]
@@ -57,7 +62,7 @@ include_external_packages = true
 [[tool.importlinter.contracts]]
 name = "Clean Architecture layers"
 type = "layers"
-layers = ["nfbench.bootstrap", "nfbench.adapters | nfbench.infrastructure", "nfbench.application", "nfbench.domain"]
+layers = ["nfbench.bootstrap", "nfbench.presentation | nfbench.adapters | nfbench.infrastructure", "nfbench.application", "nfbench.domain"]
 containers = []
 exhaustive = false
 
@@ -65,4 +70,4 @@ exhaustive = false
 name = "Domain and application stay free of dataframes and IO libraries"
 type = "forbidden"
 source_modules = ["nfbench.domain", "nfbench.application"]
-forbidden_modules = ["polars", "pandas", "psutil", "altair", "marimo"]
+forbidden_modules = ["polars", "pandas", "psutil", "altair", "marimo", "starlette", "uvicorn", "httpx"]
