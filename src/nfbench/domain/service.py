@@ -62,6 +62,34 @@ class RunStatus:
     error: str | None = None
 
 
+MAX_KEPT_PULLS = 20
+MAX_MODEL_NAME_LENGTH = 100
+MODEL_NAME_PATTERN = (
+    r"^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*){0,2}(:[A-Za-z0-9][A-Za-z0-9._-]*)?$"
+)
+"""An Ollama model name: up to three path parts and an optional tag (ADR-0005)."""
+
+
+class PullState(StrEnum):
+    """Where the pull of a model is in its life."""
+
+    QUEUED = "queued"
+    PULLING = "pulling"
+    DONE = "done"
+    FAILED = "failed"
+
+
+@dataclass(frozen=True, slots=True)
+class PullStatus:
+    """The state of one pull as the API shows it; ``percent`` is None until a total is known."""
+
+    pull_id: str
+    model: str
+    state: PullState
+    percent: int | None = None
+    error: str | None = None
+
+
 @dataclass(frozen=True, slots=True)
 class MachineInfo:
     """The machine a run was made on; ``gpu`` is None for a run on the CPU only."""

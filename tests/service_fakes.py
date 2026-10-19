@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from nfbench.application.benchmark import HotelInput
 from nfbench.application.ports import Payload
+from nfbench.domain.errors import BackendError, ModelInUseError
 from nfbench.domain.models import (
     BenchmarkConfig,
     DatasetInfo,
@@ -63,6 +64,53 @@ class FakeCatalog:
 
     def installed_models(self) -> tuple[str, ...]:
         return self.models
+
+
+class FakeModelAdmin:
+    """Pulls into and deletes from a ``FakeCatalog``, or fails as scripted."""
+
+    def __init__(self, catalog: FakeCatalog) -> None:
+        self._catalog = catalog
+        self.pulled: list[str] = []
+        self.deleted: list[str] = []
+        self.fail_with: str | None = None
+        self.progress_before_failing: int | None = None
+        self.defect: Exception | None = None
+        self.delete_result = True
+        self.delete_error: Exception | None = None
+
+    def pull(self, model: str, on_progress: Callable[[int | None], None]) -> None:
+        self.pulled.append(model)
+        if self.defect is not None:
+            raise self.defect
+        if self.progress_before_failing is not None:
+            on_progress(self.progress_before_failing)
+        if self.fail_with is not None:
+            raise BackendError(self.fail_with)
+        on_progress(50)
+        self._catalog.models = (*self._catalog.models, model)
+
+    def delete(self, model: str) -> bool:
+        if self.delete_error is not None:
+            raise self.delete_error
+        if self.delete_result:
+            self.deleted.append(model)
+            self._catalog.models = tuple(m for m in self._catalog.models if m != model)
+        return self.delete_result
+
+
+class FakeGuard:
+    """A model use guard: models in ``in_use`` are refused, any other is deleted."""
+
+    def __init__(self, in_use: set[str] | None = None) -> None:
+        self.in_use = in_use or set()
+        self.checked: list[str] = []
+
+    def delete_if_unused(self, model: str, delete: Callable[[], bool]) -> bool:
+        if model in self.in_use:
+            raise ModelInUseError(model)
+        self.checked.append(model)
+        return delete()
 
 
 class FakeInspector:

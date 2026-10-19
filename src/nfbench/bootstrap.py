@@ -14,11 +14,13 @@ from nfbench.adapters.backends import OpenAICompatibleBackend, default_backends
 from nfbench.adapters.hotel_input import DatasetHotelInput
 from nfbench.adapters.model_catalog import BackendModelCatalog
 from nfbench.adapters.ollama_info import OllamaVersionReader
+from nfbench.adapters.ollama_models import OllamaModelAdmin
 from nfbench.adapters.pending_store import FilePendingStore
 from nfbench.adapters.result_store import DEFAULT_RESULTS_PATH, JsonlResultStore
 from nfbench.adapters.web_result_sender import WebResultSender
 from nfbench.application.benchmark import BenchmarkController
 from nfbench.application.delivery import DeliveryService
+from nfbench.application.model_service import ModelService
 from nfbench.application.run_service import RunService
 from nfbench.infrastructure.machine import SystemMachineInspector
 from nfbench.infrastructure.resources import ThreadedResourceMonitor
@@ -100,6 +102,10 @@ def create_service_app() -> Starlette:
     """ASGI factory: ``uvicorn --factory nfbench.bootstrap:create_service_app``."""
     settings = ServiceSettings.from_env(os.environ)
     service = build_run_service(settings)
+    backend = OpenAICompatibleBackend("ollama", settings.ollama_url.rstrip("/") + "/v1")
+    model_service = ModelService(
+        BackendModelCatalog(backend), OllamaModelAdmin(settings.ollama_url), service
+    )
     worker = BackgroundWorker(service.tick)
 
     @asynccontextmanager
@@ -111,4 +117,4 @@ def create_service_app() -> Starlette:
         finally:
             worker.stop()
 
-    return create_app(service, settings.api_token, lifespan)
+    return create_app(service, settings.api_token, lifespan, model_service)

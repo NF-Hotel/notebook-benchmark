@@ -18,14 +18,22 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
+from nfbench.application.model_service import ModelService
 from nfbench.application.run_service import RunService
 from nfbench.domain.errors import (
+    BackendError,
+    InvalidModelNameError,
     InvalidRunRequestError,
+    ModelAlreadyInstalledError,
+    ModelInUseError,
+    ModelNotFoundError,
     ModelNotInstalledError,
+    PullActiveError,
+    PullNotFoundError,
     QueueFullError,
     RunNotFoundError,
 )
-from nfbench.domain.service import RunStatus, StartRunRequest
+from nfbench.domain.service import PullStatus, RunStatus, StartRunRequest
 
 RETRY_AFTER_S = 30
 _BEARER = "Bearer "
@@ -53,6 +61,17 @@ def _status_json(status: RunStatus) -> dict[str, Any]:  # Any: JSON body
     return body
 
 
+def _pull_json(status: PullStatus) -> dict[str, Any]:  # Any: JSON body
+    return asdict(status)
+
+
+def _parse_pull(body: object) -> str:
+    """The model name of ``POST /models``; anything that is not the contract is an invalid name."""
+    if not isinstance(body, Mapping) or not isinstance(body.get("name"), str):
+        raise InvalidModelNameError("the body must be a JSON object with the string name")
+    return str(body["name"])
+
+
 def _parse_start(body: object) -> StartRunRequest:
     """Strict reading of the body; anything that is not the contract is an invalid request."""
     if not isinstance(body, Mapping):
@@ -70,7 +89,12 @@ def _parse_start(body: object) -> StartRunRequest:
     return StartRunRequest(tuple(models), hotel, tasks, runs)
 
 
-def create_app(service: RunService, token: str, lifespan: Lifespan | None = None) -> Starlette:
+def create_app(
+    service: RunService,
+    token: str,
+    lifespan: Lifespan | None = None,
+    model_service: ModelService | None = None,
+) -> Starlette:
     """The ASGI application; ``/health`` is open, every other path needs the bearer token."""
 
     async def health(_: Request) -> Response:
@@ -81,6 +105,48 @@ def create_app(service: RunService, token: str, lifespan: Lifespan | None = None
             return _problem(401, "unauthorized")
         installed = await run_in_threadpool(service.installed_models)
         return JSONResponse({"models": list(installed)})
+
+    async def start_pull(request: Request) -> Response:
+        if not _authorized(request, token) or model_service is None:
+            return _problem(401, "unauthorized")
+        try:
+            name = _parse_pull(await request.json())
+            status = await run_in_threadpool(model_service.start_pull, name)
+        except ValueError:
+            return _problem(400, "invalid_request", "the body is not valid JSON")
+        except InvalidModelNameError as error:
+            return _problem(400, "invalid_model_name", str(error))
+        except ModelAlreadyInstalledError as error:
+            return _problem(409, "already_installed", str(error))
+        except PullActiveError as error:
+            return _problem(409, "pull_active", str(error))
+        return JSONResponse(_pull_json(status), status_code=202)
+
+    async def get_pull(request: Request) -> Response:
+        if not _authorized(request, token) or model_service is None:
+            return _problem(401, "unauthorized")
+        try:
+            status = await run_in_threadpool(
+                model_service.pull_status, request.path_params["pull_id"]
+            )
+        except PullNotFoundError:
+            return _problem(404, "pull_not_found")
+        return JSONResponse(_pull_json(status))
+
+    async def delete_model(request: Request) -> Response:
+        if not _authorized(request, token) or model_service is None:
+            return _problem(401, "unauthorized")
+        try:
+            await run_in_threadpool(model_service.delete, request.path_params["name"])
+        except InvalidModelNameError as error:
+            return _problem(400, "invalid_model_name", str(error))
+        except ModelNotFoundError as error:
+            return _problem(404, "model_not_found", str(error))
+        except ModelInUseError as error:
+            return _problem(409, "model_in_use", str(error))
+        except BackendError as error:
+            return _problem(502, "model_server_error", str(error))
+        return Response(status_code=204)
 
     async def start_run(request: Request) -> Response:
         if not _authorized(request, token):
@@ -112,6 +178,9 @@ def create_app(service: RunService, token: str, lifespan: Lifespan | None = None
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/models", models, methods=["GET"]),
+        Route("/models", start_pull, methods=["POST"]),
+        Route("/models/pulls/{pull_id}", get_pull, methods=["GET"]),
+        Route("/models/{name:path}", delete_model, methods=["DELETE"]),
         Route("/runs", start_run, methods=["POST"]),
         Route("/runs/{run_id}", get_run, methods=["GET"]),
     ]
