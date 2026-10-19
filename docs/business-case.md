@@ -12,7 +12,7 @@
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [ed03191] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 7 (an administrator adds and deletes Ollama models through the service), one scope item and success criterion 10; accepted after RC-018 Go | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 7 (an administrator adds and deletes Ollama models through the service), one scope item and success criterion 10; accepted after RC-018 Go | [b4a507d] |
 
 ---
 
@@ -151,3 +151,4 @@ Proceed.
 
 [SA-001]: ./stakeholder-analysis.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
+[b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317

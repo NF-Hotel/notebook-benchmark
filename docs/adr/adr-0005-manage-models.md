@@ -9,8 +9,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-020 Go | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [b4a507d] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-020 Go | [b4a507d] |
 
 Allowed Status values: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, `Superseded by ADR-NNNN`.
 
@@ -71,3 +71,4 @@ Quality attributes: usability improves (no command line); security is kept (toke
 [ADR-0001]: ./adr-0001-service-contract.md
 [ADR-0002]: ./adr-0002-benchmark-models.md
 [ADR-0004]: ./adr-0004-use-the-vm-ollama.md
+[b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
