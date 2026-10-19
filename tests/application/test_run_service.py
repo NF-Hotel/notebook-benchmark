@@ -11,7 +11,13 @@ from nfbench.domain.errors import (
     QueueFullError,
     RunNotFoundError,
 )
-from nfbench.domain.service import DeliveryOutcome, DeliveryState, RunState, StartRunRequest
+from nfbench.domain.service import (
+    MAX_LISTED_RUNS,
+    DeliveryOutcome,
+    DeliveryState,
+    RunState,
+    StartRunRequest,
+)
 from tests.service_fakes import (
     HOTEL,
     FakeCatalog,
@@ -237,3 +243,42 @@ def test_start_a_model_that_was_deleted_after_the_check_of_an_earlier_run_is_ref
 def _remove(parts: _Parts, model: str) -> bool:
     parts.catalog.models = tuple(m for m in parts.catalog.models if m != model)
     return True
+
+
+def test_list_runs_no_run_is_an_empty_tuple() -> None:
+    assert _Parts().service.list_runs() == ()
+
+
+def test_list_runs_returns_the_runs_newest_first_with_their_state() -> None:
+    parts = _Parts()
+    first = parts.service.start(StartRunRequest(("m1",)))
+    second = parts.service.start(StartRunRequest(("m2",)))
+
+    listed = parts.service.list_runs()
+
+    assert [run.run_id for run in listed] == [second.run_id, first.run_id]
+    assert [run.state for run in listed] == [RunState.QUEUED, RunState.QUEUED]
+
+
+def test_list_runs_shows_a_change_of_state_in_the_next_call() -> None:
+    parts = _Parts()
+    run = parts.service.start(StartRunRequest(("m1",)))
+    before = parts.service.list_runs()[0].state
+
+    parts.service.tick()
+
+    after = parts.service.list_runs()[0]
+    assert (before, after.run_id, after.state) == (RunState.QUEUED, run.run_id, RunState.DONE)
+
+
+def test_list_runs_keeps_the_newest_twenty() -> None:
+    parts = _Parts()
+    ids = []
+    for _ in range(MAX_LISTED_RUNS + 3):
+        ids.append(parts.service.start(StartRunRequest(("m1",))).run_id)
+        parts.service.tick()
+
+    listed = parts.service.list_runs()
+
+    assert len(listed) == MAX_LISTED_RUNS
+    assert [run.run_id for run in listed] == list(reversed(ids))[:MAX_LISTED_RUNS]

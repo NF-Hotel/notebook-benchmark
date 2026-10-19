@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [ced9a43] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-023 Go | [ced9a43] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-024 and RC-025 | pending |
 
 ---
 
@@ -68,11 +69,11 @@ After a refresh of the page, or from another browser, an administrator could no 
 
 | # | Task | Summary | Needs its own Use Case/User Story? | Reference |
 | --- | --- | --- | --- | --- |
-| 1 | Record the decision | ADR-0006 and the new version of the OpenAPI file; reviews. | No | |
-| 2 | Lists in the services | The newest 20 runs and the kept downloads, newest first. | No | |
-| 3 | Routes | `GET /runs` and `GET /models/pulls` with the token check. | No | |
-| 4 | Tests | Service, API and contract tests with fakes. | No | |
-| 5 | Review | Against the milestone criteria and `qc-programming-python`; record the `RC-*`. | No | |
+| 1 | Record the decision | ADR-0006 and the new version of the OpenAPI file; reviews. | No | Done: ADR-0006, OpenAPI 1.2.0, RC-024 |
+| 2 | Lists in the services | The newest 20 runs and the kept downloads, newest first. | No | Done: `RunService.list_runs`, `ModelService.list_pulls` |
+| 3 | Routes | `GET /runs` and `GET /models/pulls` with the token check. | No | Done: `GET /runs`, `GET /models/pulls` |
+| 4 | Tests | Service, API and contract tests with fakes. | No | Done: 17 new tests, 286 in all |
+| 5 | Review | Against the milestone criteria and `qc-programming-python`; record the `RC-*`. | No | Done: RC-025 |
 
 ---
 

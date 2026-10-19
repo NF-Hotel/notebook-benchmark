@@ -240,3 +240,32 @@ def test_delete_a_backend_error_is_passed_on() -> None:
 def test_delete_an_invalid_name_is_refused(name: str) -> None:
     with pytest.raises(InvalidModelNameError):
         _Parts("llama3.2:3b").service.delete(name)
+
+
+def test_list_pulls_no_pull_is_an_empty_tuple() -> None:
+    assert _Parts().service.list_pulls() == ()
+
+
+def test_list_pulls_returns_the_pulls_newest_first_and_shows_a_change_of_state() -> None:
+    parts = _Parts()
+    parts.service.start_pull("phi4-mini")
+    parts.run_pending()
+    parts.service.start_pull("qwen2.5:7b")
+
+    listed = parts.service.list_pulls()
+
+    assert [(p.model, p.state) for p in listed] == [
+        ("qwen2.5:7b", PullState.QUEUED),
+        ("phi4-mini", PullState.DONE),
+    ]
+    parts.run_pending()
+    assert parts.service.list_pulls()[0].state is PullState.DONE
+
+
+def test_list_pulls_keeps_only_the_last_twenty() -> None:
+    parts = _Parts()
+    for n in range(MAX_KEPT_PULLS + 2):
+        parts.service.start_pull(f"model-{n}")
+        parts.run_pending()
+
+    assert len(parts.service.list_pulls()) == MAX_KEPT_PULLS

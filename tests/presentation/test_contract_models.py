@@ -9,7 +9,12 @@ from typing import Any
 import pytest
 import yaml
 
-from nfbench.domain.service import MODEL_NAME_PATTERN, PullState
+from nfbench.domain.service import (
+    MAX_KEPT_PULLS,
+    MAX_LISTED_RUNS,
+    MODEL_NAME_PATTERN,
+    PullState,
+)
 
 CONTRACT = Path(__file__).resolve().parents[2] / "openapi" / "benchmark-contract.yaml"
 
@@ -26,6 +31,8 @@ def contract() -> dict[str, Any]:
         ("/models", "post", {"202", "400", "401", "409"}),
         ("/models/pulls/{pull_id}", "get", {"200", "401", "404"}),
         ("/models/{name}", "delete", {"204", "400", "401", "404", "409", "502"}),
+        ("/runs", "get", {"200", "401"}),
+        ("/models/pulls", "get", {"200", "401"}),
     ],
 )
 def test_the_contract_documents_the_status_codes_of_the_model_routes(
@@ -68,5 +75,19 @@ def test_the_name_pattern_of_the_contract_is_the_pattern_of_the_service(
     assert re.fullmatch(schema["pattern"], "phi4-mini:latest") is not None
 
 
-def test_the_version_of_the_contract_is_one_point_one(contract: dict[str, Any]) -> None:
-    assert contract["info"]["version"] == "1.1.0"
+def test_the_version_of_the_contract_is_one_point_two(contract: dict[str, Any]) -> None:
+    assert contract["info"]["version"] == "1.2.0"
+
+
+def test_the_lists_are_arrays_of_the_single_read_objects(contract: dict[str, Any]) -> None:
+    runs = contract["paths"]["/runs"]["get"]["responses"]["200"]["content"]["application/json"][
+        "schema"
+    ]
+    pulls = contract["paths"]["/models/pulls"]["get"]["responses"]["200"]["content"][
+        "application/json"
+    ]["schema"]
+
+    assert runs["properties"]["runs"]["items"] == {"$ref": "#/components/schemas/RunState"}
+    assert pulls["properties"]["pulls"]["items"] == {"$ref": "#/components/schemas/PullStatus"}
+    assert runs["properties"]["runs"]["maxItems"] == MAX_LISTED_RUNS
+    assert pulls["properties"]["pulls"]["maxItems"] == MAX_KEPT_PULLS

@@ -79,6 +79,11 @@ class ModelService:
             except KeyError as error:
                 raise PullNotFoundError(pull_id) from error
 
+    def list_pulls(self) -> tuple[PullStatus, ...]:
+        """The downloads that the service keeps, newest first (ADR-0006)."""
+        with self._lock:
+            return tuple(reversed(self._pulls.values()))
+
     def delete(self, name: str) -> None:
         """Delete an installed model; raise when it is not installed or a run uses it."""
         model = self._valid_name(name)

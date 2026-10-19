@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NFHotel benchmark contract
-  version: 1.1.0
+  version: 1.2.0
   description: >-
     The contract between the NFHotel web application and the benchmark service (ADR-0001).
     The benchmark service implements the paths tagged `benchmark-service`.
@@ -91,6 +91,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /models/pulls:
+    get:
+      tags: [benchmark-service]
+      operationId: listModelPulls
+      summary: The model downloads that the service keeps, newest first (ADR-0006)
+      responses:
+        "200":
+          description: The downloads, with the fields of `GET /models/pulls/{pull_id}`; an empty array when there is none.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [pulls]
+                properties:
+                  pulls:
+                    type: array
+                    maxItems: 20
+                    items:
+                      $ref: "#/components/schemas/PullStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /models/pulls/{pull_id}:
     get:
       tags: [benchmark-service]
@@ -160,6 +181,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Problem"
   /runs:
+    get:
+      tags: [benchmark-service]
+      operationId: listRuns
+      summary: The runs that the service knows, newest first (ADR-0006)
+      description: >-
+        At most 20 runs; the queued and running runs are always in the list. A restart of the service forgets them;
+        the results that were delivered are in the web database.
+      responses:
+        "200":
+          description: The runs, with the fields of `GET /runs/{run_id}`; an empty array when there is none.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runs]
+                properties:
+                  runs:
+                    type: array
+                    maxItems: 20
+                    items:
+                      $ref: "#/components/schemas/RunState"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
       tags: [benchmark-service]
       operationId: startRun
