@@ -1,0 +1,7 @@
+# Models pulled by scripts/pull-models.sh, one per line (ADR-0002).
+# Empty lines and lines that start with # are ignored.
+llama3.2:3b
+phi3.5
+qwen2.5:7b
+# Only on a VM with at least 16 GiB memory (ADR-0002); remove the # to pull it.
+# gemma2:9b

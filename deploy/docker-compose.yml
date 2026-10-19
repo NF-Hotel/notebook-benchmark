@@ -1,0 +1,48 @@
+# The benchmark service (ADR-0001, ADR-0004). Read by Docker Compose. Settings live in
+# benchmark.env (git-ignored); copy benchmark.env.example first. Start with:
+#   scripts/deploy.sh
+# or by hand, from this folder:
+#   docker compose --env-file benchmark.env up -d --build
+# No host port is published and nginx has no route to the service. It runs beside NFHotel on the
+# same VM and joins two networks that NFHotel makes:
+#   llm  - the network of NFHotel's Ollama (deploy/ollama there). The service reaches the model
+#          server at http://ollama:11434; it starts no Ollama of its own (ADR-0004).
+#   api  - the internal network of the NFHotel web application and API (NFHotel ADR-0004). The web
+#          application starts runs at http://benchmark:8000; the service delivers results to the
+#          NFHotel API at http://nfhotel-api:8080.
+# The compose project is named nfbench so that it cannot replace NFHotel's own deploy/benchmark.
+# Unsent results are kept in the volume results.
+name: nfbench
+
+services:
+  benchmark:
+    image: benchmark:local
+    build:
+      context: ..
+    restart: unless-stopped
+    env_file: ${BENCHMARK_ENV_FILE:-benchmark.env}
+    expose:
+      - "8000"
+    volumes:
+      - results:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - llm
+      - api
+
+volumes:
+  results:
+
+networks:
+  llm:
+    name: ${NFHOTEL_LLM_NETWORK:-nfhotel-llm}
+    external: true
+  api:
+    name: ${NFHOTEL_API_NETWORK:-nfhotel-api}
+    external: true
