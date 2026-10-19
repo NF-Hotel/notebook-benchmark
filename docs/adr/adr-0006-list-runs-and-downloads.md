@@ -9,8 +9,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-024 Go | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [ced9a43] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-024 Go | [ced9a43] |
 
 Allowed Status values: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, `Superseded by ADR-NNNN`.
 
@@ -66,3 +66,4 @@ Quality attributes: usability improves (nothing is lost by a refresh); reliabili
 [MIL-006]: ../milestones/mil-006-list-runs-and-downloads.md
 [ADR-0001]: ./adr-0001-service-contract.md
 [ADR-0005]: ./adr-0005-manage-models.md
+[ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42

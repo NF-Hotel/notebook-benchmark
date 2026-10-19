@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Added MIL-005 (models added and deleted by an administrator); accepted after RC-018 Go | [b4a507d] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Added MIL-006 (list the runs and the model downloads); accepted after RC-022 Go | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Added MIL-006 (list the runs and the model downloads); accepted after RC-022 Go | [ced9a43] |
 
 ---
 
@@ -106,3 +106,4 @@ NFHotel MIL-019 and MIL-020 build against the contract of MIL-001, so a No-Go on
 [MIL-006]: ./milestones/mil-006-list-runs-and-downloads.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
+[ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42
