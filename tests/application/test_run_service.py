@@ -6,6 +6,7 @@ from nfbench.application.delivery import DeliveryService
 from nfbench.application.run_service import RunService
 from nfbench.domain.errors import (
     InvalidRunRequestError,
+    ModelInUseError,
     ModelNotInstalledError,
     QueueFullError,
     RunNotFoundError,
@@ -26,13 +27,14 @@ NOW = 1_792_404_000.0
 
 class _Parts:
     def __init__(self, sender: FakeSender | None = None, fail_with: str | None = None) -> None:
+        self.catalog = FakeCatalog("m1", "m2", "m3")
         self.executor = FakeExecutor(fail_with)
         self.sender = sender or FakeSender()
         self.store = MemoryPendingStore()
         self.clock = FakeEpoch(NOW)
         delivery = DeliveryService(self.sender, self.store, self.clock)
         self.service = RunService(
-            FakeCatalog("m1", "m2", "m3"),
+            self.catalog,
             self.executor,
             lambda: HOTEL,
             FakeInspector(),
@@ -188,3 +190,50 @@ def test_restore_pending_results_after_a_restart_are_delivered() -> None:
 
 def test_installed_models_lists_the_catalog() -> None:
     assert _Parts().service.installed_models() == ("m1", "m2", "m3")
+
+
+def test_delete_if_unused_a_queued_run_that_names_the_model_blocks_the_delete() -> None:
+    parts = _Parts()
+    parts.service.start(StartRunRequest(("m1",)))
+    called: list[str] = []
+
+    def delete() -> bool:
+        called.append("deleted")
+        return True
+
+    with pytest.raises(ModelInUseError):
+        parts.service.delete_if_unused("m1", delete)
+
+    assert called == []
+
+
+def test_delete_if_unused_a_model_that_no_run_names_is_deleted() -> None:
+    parts = _Parts()
+    parts.service.start(StartRunRequest(("m1",)))
+
+    assert parts.service.delete_if_unused("m2", lambda: True) is True
+
+
+def test_delete_if_unused_a_finished_run_does_not_block_the_delete() -> None:
+    parts = _Parts()
+    parts.service.start(StartRunRequest(("m1",)))
+    parts.service.tick()
+
+    assert parts.service.delete_if_unused("m1", lambda: True) is True
+
+
+def test_delete_if_unused_passes_on_the_answer_of_the_delete() -> None:
+    assert _Parts().service.delete_if_unused("m1", lambda: False) is False
+
+
+def test_start_a_model_that_was_deleted_after_the_check_of_an_earlier_run_is_refused() -> None:
+    parts = _Parts()
+    parts.service.delete_if_unused("m1", lambda: _remove(parts, "m1"))
+
+    with pytest.raises(ModelNotInstalledError):
+        parts.service.start(StartRunRequest(("m1",)))
+
+
+def _remove(parts: _Parts, model: str) -> bool:
+    parts.catalog.models = tuple(m for m in parts.catalog.models if m != model)
+    return True

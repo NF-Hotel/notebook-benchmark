@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NFHotel benchmark contract
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     The contract between the NFHotel web application and the benchmark service (ADR-0001).
     The benchmark service implements the paths tagged `benchmark-service`.
@@ -55,6 +55,110 @@ paths:
                       - ["llama3.2:3b", "qwen2.5:7b"]
         "401":
           $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [benchmark-service]
+      operationId: startModelPull
+      summary: Start the pull of a model into Ollama (ADR-0005)
+      description: >-
+        Answers at once; the pull runs in the background, one at a time. Read its progress at
+        `/models/pulls/{pull_id}`. A name without a tag is listed by Ollama as `<name>:latest`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PullModel"
+      responses:
+        "202":
+          description: The pull is queued.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PullStatus"
+        "400":
+          description: >-
+            The body is not valid JSON (`invalid_request`) or the name is not an Ollama model name
+            (`invalid_model_name`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          description: The model is installed (`already_installed`) or a pull is active (`pull_active`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /models/pulls/{pull_id}:
+    get:
+      tags: [benchmark-service]
+      operationId: getModelPull
+      summary: The progress of a pull
+      parameters:
+        - name: pull_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The pull. The service keeps the last 20 pulls in memory; a restart forgets them.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PullStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: No such pull (`pull_not_found`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /models/{name}:
+    delete:
+      tags: [benchmark-service]
+      operationId: deleteModel
+      summary: Delete an installed model from Ollama (ADR-0005)
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The model name as Ollama lists it, tag and path included, for example `llama3.2:3b`.
+          schema:
+            type: string
+          allowReserved: true
+      responses:
+        "204":
+          description: The model was deleted.
+        "400":
+          description: The name is not an Ollama model name (`invalid_model_name`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: The model is not installed (`model_not_found`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: A queued or running run names the model (`model_in_use`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Ollama could not be reached or refused the delete (`model_server_error`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /runs:
     post:
       tags: [benchmark-service]
@@ -202,6 +306,34 @@ components:
           maximum: 5
           default: 1
           description: Requests per model and task.
+    PullModel:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          pattern: "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*){0,2}(:[A-Za-z0-9][A-Za-z0-9._-]*)?$"
+          description: An Ollama model name, for example `phi4-mini` or `llama3.2:3b`.
+    PullStatus:
+      type: object
+      required: [pull_id, model, state, percent, error]
+      properties:
+        pull_id:
+          type: string
+        model:
+          type: string
+        state:
+          type: string
+          enum: [queued, pulling, done, failed]
+        percent:
+          type: [integer, "null"]
+          minimum: 0
+          maximum: 100
+          description: Percent of the bytes that Ollama reports; `null` until it reports a total. 100 only when `done`.
+        error:
+          type: [string, "null"]
+          description: The reason Ollama gave when `state` is `failed`.
     RunState:
       type: object
       required: [run_id, state, delivery, models, queued_at]

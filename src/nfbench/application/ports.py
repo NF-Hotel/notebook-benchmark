@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any, Protocol
 
 from nfbench.domain.models import (
@@ -62,6 +62,29 @@ class ModelCatalog(Protocol):
 
     def installed_models(self) -> tuple[str, ...]:
         """Names as the server lists them; empty when the server is down."""
+        ...
+
+
+class ModelAdmin(Protocol):
+    """Pulls models into the model server and deletes them (ADR-0005)."""
+
+    def pull(self, model: str, on_progress: Callable[[int | None], None]) -> None:
+        """Pull a model, reporting the percent of the bytes (None before a total is known).
+
+        Raise ``BackendError`` with the reason when the server cannot pull it.
+        """
+        ...
+
+    def delete(self, model: str) -> bool:
+        """Delete an installed model: True when deleted, False when it is not installed."""
+        ...
+
+
+class ModelUseGuard(Protocol):
+    """Lets a delete run while no queued or running run names the model (ADR-0005)."""
+
+    def delete_if_unused(self, model: str, delete: Callable[[], bool]) -> bool:
+        """Call ``delete`` under the run lock; raise ``ModelInUseError`` if a run uses the model."""
         ...
 
 

@@ -17,6 +17,7 @@ from nfbench.application.payload import build_result_payload
 from nfbench.application.ports import BenchmarkExecutor, MachineInspector, ModelCatalog
 from nfbench.domain.errors import (
     InvalidRunRequestError,
+    ModelInUseError,
     ModelNotInstalledError,
     QueueFullError,
     RunNotFoundError,
@@ -77,6 +78,9 @@ class RunService:
         with self._lock:
             if len(self._waiting) >= MAX_WAITING_RUNS:
                 raise QueueFullError("a run is active and the queue is full")
+            # Checked under the lock that delete_if_unused takes, so a model cannot be deleted
+            # between this check and the queuing (ADR-0005).
+            self._require_installed(request.models)
             run_id = self._new_id()
             status = RunStatus(
                 run_id,
@@ -118,10 +122,20 @@ class RunService:
             raise InvalidRunRequestError(f"runs must be 1 to {MAX_RUNS}")
         if not (request.hotel_analysis or request.deterministic_tasks):
             raise InvalidRunRequestError("choose at least one analysis")
+
+    def _require_installed(self, models: tuple[str, ...]) -> None:
         installed = set(self._catalog.installed_models())
         for model in models:
             if model not in installed:
                 raise ModelNotInstalledError(f"model '{model}' is not installed")
+
+    def delete_if_unused(self, model: str, delete: Callable[[], bool]) -> bool:
+        """Call ``delete`` while no queued or running run names the model (ADR-0005)."""
+        with self._lock:
+            for status in self._statuses.values():
+                if status.state in (RunState.QUEUED, RunState.RUNNING) and model in status.models:
+                    raise ModelInUseError(f"model '{model}' is used by run {status.run_id}")
+            return delete()
 
     def _run_next(self) -> bool:
         with self._lock:

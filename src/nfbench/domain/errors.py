@@ -25,3 +25,27 @@ class QueueFullError(Exception):
 
 class RunNotFoundError(Exception):
     """No run has the given id."""
+
+
+class InvalidModelNameError(Exception):
+    """A model name does not look like the name of an Ollama model (ADR-0005)."""
+
+
+class ModelAlreadyInstalledError(Exception):
+    """The model to pull is already installed."""
+
+
+class PullActiveError(Exception):
+    """A pull is queued or running; one pull at a time (ADR-0005)."""
+
+
+class PullNotFoundError(Exception):
+    """No pull has the given id."""
+
+
+class ModelNotFoundError(Exception):
+    """The model to delete is not installed."""
+
+
+class ModelInUseError(Exception):
+    """A queued or running benchmark run names the model, so it is not deleted."""

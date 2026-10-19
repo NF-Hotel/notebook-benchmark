@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [b4a507d] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-019 Go | [b4a507d] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-020 and RC-021 | pending |
 
 ---
 
@@ -69,11 +70,11 @@ Let an administrator install a further Ollama model, for example `phi4-mini`, an
 
 | # | Task | Summary | Needs its own Use Case/User Story? | Reference |
 | --- | --- | --- | --- | --- |
-| 1 | Record the decision | ADR-0005 and the new version of the OpenAPI file; reviews. | No | |
-| 2 | Ollama adapter and model service | Pull with progress, delete, name check, one pull at a time, delete refused for a model in use. | No | |
-| 3 | Routes and wiring | The three routes, the token check, the status codes; composition root. | No | |
-| 4 | Tests | Service and API tests with fakes, and the contract status codes. | No | |
-| 5 | Review | Against the milestone criteria and `qc-programming-python`; record the `RC-*`. | No | |
+| 1 | Record the decision | ADR-0005 and the new version of the OpenAPI file; reviews. | No | Done: ADR-0005, OpenAPI 1.1.0, RC-020 |
+| 2 | Ollama adapter and model service | Pull with progress, delete, name check, one pull at a time, delete refused for a model in use. | No | Done: `ModelService`, `OllamaModelAdmin`, `RunService.delete_if_unused` |
+| 3 | Routes and wiring | The three routes, the token check, the status codes; composition root. | No | Done: three routes in `presentation/api.py`, `bootstrap.py` |
+| 4 | Tests | Service and API tests with fakes, and the contract status codes. | No | Done: 91 new tests, 269 in all |
+| 5 | Review | Against the milestone criteria and `qc-programming-python`; record the `RC-*`. | No | Done: RC-021 |
 
 ---
 
