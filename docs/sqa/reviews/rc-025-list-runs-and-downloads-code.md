@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [82a202d] |
 
 ---
 
@@ -61,3 +61,4 @@ Go — every mandatory criterion passes or is not applicable. The review is not 
 [MIL-006]: ../../milestones/mil-006-list-runs-and-downloads.md
 [ADR-0006]: ../../adr/adr-0006-list-runs-and-downloads.md
 [QC-PY-001]: ../../../framework/qc/code/qc-programming-python.md
+[82a202d]: https://github.com/NF-Hotel/notebook-benchmark/commit/82a202d7872c28d5ff118e76190fa4753683bead

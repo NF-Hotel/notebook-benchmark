@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [ced9a43] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-023 Go | [ced9a43] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-024 and RC-025 | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-024 and RC-025 | [82a202d] |
 
 ---
 
@@ -82,3 +82,4 @@ After a refresh of the page, or from another browser, an administrator could no 
 [MIL-005]: ./mil-005-manage-models.md
 [ADR-0006]: ../adr/adr-0006-list-runs-and-downloads.md
 [ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42
+[82a202d]: https://github.com/NF-Hotel/notebook-benchmark/commit/82a202d7872c28d5ff118e76190fa4753683bead
