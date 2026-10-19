@@ -12,7 +12,7 @@
 # Environment:
 #   SMOKE_TIMEOUT_S  seconds to wait for the run (default 900)
 #   COMPOSE_FILE     compose file (default deploy/docker-compose.yml)
-#   OLLAMA_ENV       env file for the compose file (default deploy/ollama.env)
+#   BENCHMARK_ENV    settings file of the service (default deploy/benchmark.env)
 #
 # Exit codes: 0 all checks passed; 1 a check failed or an option is wrong; 3 no model is
 # installed (run scripts/pull-models.sh first).

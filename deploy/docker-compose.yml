@@ -1,18 +1,18 @@
-# The benchmark service and Ollama (ADR-0001, ADR-0002). Read by Docker Compose. Settings
-# live in benchmark.env and ollama.env (git-ignored); copy the .example files first. Start with:
+# The benchmark service (ADR-0001, ADR-0004). Read by Docker Compose. Settings live in
+# benchmark.env (git-ignored); copy benchmark.env.example first. Start with:
 #   scripts/deploy.sh
 # or by hand, from this folder:
-#   docker compose --env-file ollama.env up -d --build
-# No host port is published and nginx has no route to either service. The benchmark service
-# joins two networks:
-#   llm  - private to this file; Ollama and the benchmark service only. Ollama needs the internet
-#          to download models, so it is an ordinary bridge.
-#   api  - the internal network of the NFHotel web application and API (create it once with
-#          docker network create --internal nfhotel-api, as NFHotel ADR-0004 says). The web
-#          application starts runs at http://benchmark:8000; the benchmark service delivers
-#          results to the NFHotel API at http://nfhotel-api:8080.
-# Models are kept in the volume models; unsent results in the volume results.
-name: benchmark
+#   docker compose --env-file benchmark.env up -d --build
+# No host port is published and nginx has no route to the service. It runs beside NFHotel on the
+# same VM and joins two networks that NFHotel makes:
+#   llm  - the network of NFHotel's Ollama (deploy/ollama there). The service reaches the model
+#          server at http://ollama:11434; it starts no Ollama of its own (ADR-0004).
+#   api  - the internal network of the NFHotel web application and API (NFHotel ADR-0004). The web
+#          application starts runs at http://benchmark:8000; the service delivers results to the
+#          NFHotel API at http://nfhotel-api:8080.
+# The compose project is named nfbench so that it cannot replace NFHotel's own deploy/benchmark.
+# Unsent results are kept in the volume results.
+name: nfbench
 
 services:
   benchmark:
@@ -21,9 +21,6 @@ services:
       context: ..
     restart: unless-stopped
     env_file: ${BENCHMARK_ENV_FILE:-benchmark.env}
-    depends_on:
-      ollama:
-        condition: service_healthy
     expose:
       - "8000"
     volumes:
@@ -39,29 +36,13 @@ services:
       - llm
       - api
 
-  ollama:
-    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
-    restart: unless-stopped
-    env_file: ${OLLAMA_ENV_FILE:-ollama.env}
-    expose:
-      - "11434"
-    volumes:
-      - models:/root/.ollama
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 15s
-    networks:
-      - llm
-
 volumes:
-  models:
   results:
 
 networks:
   llm:
+    name: ${NFHOTEL_LLM_NETWORK:-nfhotel-llm}
+    external: true
   api:
     name: ${NFHOTEL_API_NETWORK:-nfhotel-api}
     external: true

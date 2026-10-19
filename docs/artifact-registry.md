@@ -15,10 +15,10 @@ document of a type. `Primary File` may contain a glob (e.g.
 | SA | Stakeholder Analysis | docs/stakeholder-analysis.md | 002 |
 | PP | Project Plan | docs/project-plan.md | 002 |
 | MIL | Milestone / Gateway | docs/milestones/*.md | 005 |
-| ADR | Architecture Decision Record | docs/adr/adr-*.md | 0004 |
+| ADR | Architecture Decision Record | docs/adr/adr-*.md | 0005 |
 | US | User Story | docs/user-stories.md | 002 |
 | UC | Use Case | docs/use-cases/uc-*/uc.md | 002 |
-| RC | SQA Review Record | docs/sqa/reviews/rc-*.md | 015 |
+| RC | SQA Review Record | docs/sqa/reviews/rc-*.md | 018 |
 
 ## Languages
 
