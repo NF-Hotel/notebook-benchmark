@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-004 Go | [1f68247] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-009 | [845d52c] |
 
 ---
 
@@ -69,11 +70,11 @@ Turn the notebook's benchmark into a service that can be started over HTTP and t
 
 | # | Task | Summary | Needs its own Use Case/User Story? | Reference |
 | --- | --- | --- | --- | --- |
-| 1 | Run controller | State of a run, the queue and the one-run rule in the application layer; unit tests. | No | |
-| 2 | HTTP API | `POST /runs`, `GET /runs/{id}`, health, the token check; presentation layer (MVC for an API) and tests. | Yes | UC: administrator starts a benchmark run |
-| 3 | Machine description | CPU, memory, GPU or none, and the backend version in the result header. | No | |
-| 4 | Result sender and store | Post to the web API, idempotent, retry with growing delay, volume store; tests with a fake web API. | No | |
-| 5 | Check and review | Lint, types, import rules, tests; review against `qc-programming-python`. | No | |
+| 1 | Run controller | State of a run, the queue and the one-run rule in the application layer; unit tests. | No | Done: `application/run_service.py` |
+| 2 | HTTP API | `POST /runs`, `GET /runs/{id}`, health, the token check; presentation layer (MVC for an API) and tests. | Yes | UC: administrator starts a benchmark run Done: `presentation/api.py` |
+| 3 | Machine description | CPU, memory, GPU or none, and the backend version in the result header. | No | Done: `infrastructure/machine.py` |
+| 4 | Result sender and store | Post to the web API, idempotent, retry with growing delay, volume store; tests with a fake web API. | No | Done: `adapters/web_result_sender.py`, `adapters/pending_store.py` |
+| 5 | Check and review | Lint, types, import rules, tests; review against `qc-programming-python`. | No | Done: RC-009 (Go with conditions) |
 
 ---
 
@@ -82,3 +83,4 @@ Turn the notebook's benchmark into a service that can be started over HTTP and t
 [MIL-001]: ./mil-001-contract-and-models.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [1f68247]: https://github.com/NF-Hotel/notebook-benchmark/commit/1f68247b4234935b22f03dc9ac66ebfa2eeae72c
+[845d52c]: https://github.com/NF-Hotel/notebook-benchmark/commit/845d52c86d9f1140431dd0638a78bb56f99613ee

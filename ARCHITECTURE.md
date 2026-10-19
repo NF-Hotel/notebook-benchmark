@@ -30,10 +30,11 @@ flowchart TD
 
 | Layer | Modules | Rule |
 |---|---|---|
-| `domain` | `models.py`, `metrics.py`, `tasks.py`, `errors.py` | frozen dataclasses and pure functions; imports nothing else |
-| `application` | `ports.py`, `runner.py`, `benchmark.py`, `prompts.py`, `response_parsing.py` | use cases; imports `domain` only; no dataframes, HTTP or OS calls |
-| `adapters` | `backends.py`, `datasets.py`, `hotel_analysis.py`, `result_store.py` | HTTP, CSV, polars, JSONL |
-| `infrastructure` | `resources.py` | psutil, `nvidia-smi` subprocess |
+| `domain` | `models.py`, `metrics.py`, `tasks.py`, `errors.py`, `service.py` | frozen dataclasses and pure functions; imports nothing else |
+| `application` | `ports.py`, `runner.py`, `benchmark.py`, `prompts.py`, `response_parsing.py`, `run_service.py`, `delivery.py`, `payload.py` | use cases; imports `domain` only; no dataframes, HTTP or OS calls |
+| `presentation` | `api.py` | the HTTP API of the benchmark service (Starlette); controllers only, no rules |
+| `adapters` | `backends.py`, `datasets.py`, `hotel_analysis.py`, `result_store.py`, `web_result_sender.py`, `pending_store.py`, `hotel_input.py`, `model_catalog.py`, `ollama_info.py` | HTTP, CSV, polars, JSONL, files |
+| `infrastructure` | `resources.py`, `machine.py`, `worker.py` | psutil, `nvidia-smi` subprocess, the background thread |
 | root | `bootstrap.py` | wires concrete implementations; the only place that knows all layers |
 
 ## Component responsibilities
@@ -50,9 +51,13 @@ flowchart TD
 * **Resource monitor** – background sampler for system RAM and GPU VRAM (before / after / peak); unavailable sources yield `None`.
 * **Result store** – append-only JSONL, reads schema v1 and v2 rows.
 
+## Benchmark service (MIL-002, ADR-0001)
+
+`presentation/api.py` starts runs through `application/run_service.py` (a queue of two waiting runs, one run at a time). The worker thread (`infrastructure/worker.py`) calls `RunService.tick`: due delivery attempts first, then the next run. A finished run becomes the body of `openapi/benchmark-contract.yaml` (`application/payload.py`), is written to `pending/` on the volume (`adapters/pending_store.py`) and posted to the web API (`adapters/web_result_sender.py`) with a retry of 5 s doubling until 15 minutes after the run ended. Start the service with `uvicorn --factory nfbench.bootstrap:create_service_app`; settings are `NFBENCH_*` environment variables (`ServiceSettings`).
+
 ## Ports
 
-`ChatBackend`, `ResourceMonitor`, `ResultStore` (`application/ports.py`). Tests use fakes of these ports.
+`ChatBackend`, `ResourceMonitor`, `ResultStore`, `ModelCatalog`, `MachineInspector`, `ResultSender`, `PendingResultStore`, `BenchmarkExecutor` (`application/ports.py`). Tests use fakes of these ports.
 
 ## Extension points
 
