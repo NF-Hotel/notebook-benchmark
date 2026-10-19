@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [e733597] |
 
 ---
 
@@ -57,3 +57,4 @@ Go — every mandatory criterion passes. The scripts were run only against a fak
 [MIL-003]: ../../milestones/mil-003-containers-and-deploy.md
 [ADR-0004]: ../../adr/adr-0004-use-the-vm-ollama.md
 [QC-SH-001]: ../../../framework/qc/code/qc-programming-shell.md
+[e733597]: https://github.com/NF-Hotel/notebook-benchmark/commit/e733597d936d88185899189cbd9c3c9c99235ec9

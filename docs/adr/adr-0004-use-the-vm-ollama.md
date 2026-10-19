@@ -9,8 +9,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | pending |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-015 Go | pending |
+| 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [e733597] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-015 Go | [e733597] |
 
 Allowed Status values: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, `Superseded by ADR-NNNN`.
 
@@ -63,3 +63,4 @@ Quality attributes: performance efficiency improves (memory and disk are not dou
 [MIL-003]: ../milestones/mil-003-containers-and-deploy.md
 [MIL-004]: ../milestones/mil-004-prove-it-in-the-vm.md
 [ADR-0002]: ./adr-0002-benchmark-models.md
+[e733597]: https://github.com/NF-Hotel/notebook-benchmark/commit/e733597d936d88185899189cbd9c3c9c99235ec9

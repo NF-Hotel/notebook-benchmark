@@ -14,7 +14,7 @@
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-005 Go | [1f68247] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-010 to RC-014 | [871f21c] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Changed: the compose file starts the benchmark container only, in the project `nfbench`, and uses the Ollama of NFHotel (ADR-0004); criteria 1 and 2 read accordingly. Reviewed in RC-016 and RC-017 | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Changed: the compose file starts the benchmark container only, in the project `nfbench`, and uses the Ollama of NFHotel (ADR-0004); criteria 1 and 2 read accordingly. Reviewed in RC-016 and RC-017 | [e733597] |
 
 ---
 
@@ -85,3 +85,4 @@ Run the benchmark service and Ollama as containers on the Proxmox VM, beside the
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [1f68247]: https://github.com/NF-Hotel/notebook-benchmark/commit/1f68247b4234935b22f03dc9ac66ebfa2eeae72c
 [871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99
+[e733597]: https://github.com/NF-Hotel/notebook-benchmark/commit/e733597d936d88185899189cbd9c3c9c99235ec9
