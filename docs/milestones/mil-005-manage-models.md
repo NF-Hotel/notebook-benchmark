@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [b4a507d] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-019 Go | [b4a507d] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-020 and RC-021 | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Tasks 1 to 5 marked done after RC-020 and RC-021 | [78baf30] |
 
 ---
 
@@ -83,3 +83,4 @@ Let an administrator install a further Ollama model, for example `phi4-mini`, an
 [MIL-002]: ./mil-002-benchmark-service-api.md
 [ADR-0005]: ../adr/adr-0005-manage-models.md
 [b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
+[78baf30]: https://github.com/NF-Hotel/notebook-benchmark/commit/78baf304b2284e4a0135fdd3df66666f15be15af

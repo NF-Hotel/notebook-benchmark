@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | pending |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [78baf30] |
 
 ---
 
@@ -61,3 +61,4 @@ Go — every mandatory criterion passes or is not applicable. The review is not 
 [MIL-005]: ../../milestones/mil-005-manage-models.md
 [ADR-0005]: ../../adr/adr-0005-manage-models.md
 [QC-PY-001]: ../../../framework/qc/code/qc-programming-python.md
+[78baf30]: https://github.com/NF-Hotel/notebook-benchmark/commit/78baf304b2284e4a0135fdd3df66666f15be15af
