@@ -13,6 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [ed03191] |
 | 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 7 (an administrator adds and deletes Ollama models through the service), one scope item and success criterion 10; accepted after RC-018 Go | [b4a507d] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 8 (an administrator sees the runs and the model downloads that the service knows, also after a page refresh), one scope item and success criterion 11; accepted after RC-022 Go | [ced9a43] |
 
 ---
 
@@ -44,6 +45,7 @@ If the benchmark runs as a service on the VM, an administrator can start it, wai
 5. Store each run and its per-model measurements (time to first token, total time, tokens per second, memory, answer validity) in the web database, and show them to an administrator in the back office for later viewing.
 6. Keep the notebook and `output/results.jsonl` working, with the same result schema, so that local and VM runs are comparable.
 7. Let an administrator install a further Ollama model, for example `phi4-mini`, and delete an installed one, from the back office through the benchmark service, so the set of models is not fixed by the pull script (the pull and the delete are calls of the service to the Ollama of the VM).
+8. Let an administrator see, at any time and from any browser, which runs are queued or running and which model downloads are active, with their state, and let the page follow a change of state without a refresh, so that nothing depends on the browser session that started the work.
 
 ## Scope
 
@@ -51,6 +53,7 @@ If the benchmark runs as a service on the VM, an administrator can start it, wai
 
 - A Dockerfile and a Compose file for the benchmark service and for Ollama, with env files and tracked `.env.example` files.
 - A model-pull script and the list of models (ADR).
+- Endpoints on the benchmark service to list the runs and the model downloads that it knows (ADR-0006), and the live view of them in the web application (NFHotel MIL-020).
 - Endpoints on the benchmark service to pull a model into Ollama, to read the progress of a pull and to delete an installed model (ADR-0005), and their client and page in the web application (NFHotel MIL-020).
 - An HTTP API on the benchmark service (start, status) guarded by a service token, and its client in the web application.
 - A results API in the web application, a table in its database and an administrator page that lists runs and shows one run (planned as milestones in the NFHotel repository).
@@ -97,6 +100,7 @@ The NFHotel Business Case (objective 7) puts the benchmark service on a Proxmox 
 | 8 | Same schema | A row from the VM and a row from the notebook have the same fields (`schema_version`) | Schema test |
 | 9 | Quality gate | 0 build or lint errors, `mypy --strict` clean, all tests pass in both repositories | CI and local run |
 | 10 | Models managed by an administrator | A model that is not installed is pulled from the back office and then can be chosen for a run; an installed model is deleted from the back office; a delete of a model that a queued or running run uses is refused | Contract and service tests, and one real pull and delete in the VM |
+| 11 | Work that is in progress is visible | After a refresh of the page, or from another browser, the queued and running runs and the active download are listed with their state, and a change of state shows within 5 seconds without a refresh | Service and contract tests, and a check in the VM |
 
 ## Risks
 
@@ -152,3 +156,4 @@ Proceed.
 [SA-001]: ./stakeholder-analysis.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
+[ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42

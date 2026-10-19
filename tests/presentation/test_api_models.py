@@ -59,6 +59,8 @@ def world() -> _World:
         ("post", "/models"),
         ("get", "/models/pulls/some-id"),
         ("delete", "/models/m1:latest"),
+        ("get", "/models/pulls"),
+        ("get", "/runs"),
     ],
 )
 def test_model_routes_without_the_token_are_401(world: _World, method: str, path: str) -> None:
@@ -207,3 +209,52 @@ def test_the_run_routes_still_work_next_to_the_model_routes(world: _World) -> No
     response = world.client.post("/runs", json={"models": ["m2"]}, headers=AUTH)
 
     assert response.status_code == 202
+
+
+def test_get_runs_with_no_run_is_200_and_an_empty_list(world: _World) -> None:
+    response = world.client.get("/runs", headers=AUTH)
+
+    assert response.status_code == 200
+    assert response.json() == {"runs": []}
+
+
+def test_get_runs_lists_the_runs_newest_first_and_follows_a_change_of_state(world: _World) -> None:
+    first = world.client.post("/runs", json={"models": ["m1:latest"]}, headers=AUTH).json()
+    second = world.client.post("/runs", json={"models": ["m2"]}, headers=AUTH).json()
+
+    before = world.client.get("/runs", headers=AUTH).json()["runs"]
+    world.runs.tick()
+    after = world.client.get("/runs", headers=AUTH).json()["runs"]
+
+    assert [run["run_id"] for run in before] == [second["run_id"], first["run_id"]]
+    assert [run["state"] for run in before] == ["queued", "queued"]
+    assert after[1]["state"] == "done"
+    assert set(after[0]) == set(first)  # the fields of GET /runs/{run_id}
+
+
+def test_get_pulls_with_no_pull_is_200_and_an_empty_list(world: _World) -> None:
+    response = world.client.get("/models/pulls", headers=AUTH)
+
+    assert response.status_code == 200
+    assert response.json() == {"pulls": []}
+
+
+def test_get_pulls_lists_the_pulls_newest_first_and_follows_a_change_of_state(
+    world: _World,
+) -> None:
+    started = world.client.post("/models", json={"name": "phi4-mini"}, headers=AUTH).json()
+
+    before = world.client.get("/models/pulls", headers=AUTH).json()["pulls"]
+    world.finish_pulls()
+    after = world.client.get("/models/pulls", headers=AUTH).json()["pulls"]
+
+    assert [(p["pull_id"], p["state"]) for p in before] == [(started["pull_id"], "queued")]
+    assert [(p["pull_id"], p["state"], p["percent"]) for p in after] == [
+        (started["pull_id"], "done", 100)
+    ]
+    assert set(after[0]) == set(started)  # the fields of GET /models/pulls/{pull_id}
+
+
+def test_get_pulls_is_not_taken_for_a_pull_id(world: _World) -> None:
+    assert world.client.get("/models/pulls/nope", headers=AUTH).status_code == 404
+    assert world.client.get("/models/pulls", headers=AUTH).status_code == 200

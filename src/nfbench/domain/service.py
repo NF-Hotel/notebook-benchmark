@@ -63,6 +63,7 @@ class RunStatus:
 
 
 MAX_KEPT_PULLS = 20
+MAX_LISTED_RUNS = 20
 MAX_MODEL_NAME_LENGTH = 100
 MODEL_NAME_PATTERN = (
     r"^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*){0,2}(:[A-Za-z0-9][A-Za-z0-9._-]*)?$"

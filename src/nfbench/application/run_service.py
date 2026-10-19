@@ -24,6 +24,7 @@ from nfbench.domain.errors import (
 )
 from nfbench.domain.models import BenchmarkConfig
 from nfbench.domain.service import (
+    MAX_LISTED_RUNS,
     MAX_MODELS,
     MAX_RUNS,
     MAX_WAITING_RUNS,
@@ -92,6 +93,16 @@ class RunService:
             self._statuses[run_id] = status
             self._waiting.append(_Queued(run_id, request))
             return status
+
+    def list_runs(self) -> tuple[RunStatus, ...]:
+        """The runs that the service knows, newest first, at most ``MAX_LISTED_RUNS`` (ADR-0006).
+
+        Runs are queued and run one after the other, so the queued and running runs are the
+        newest and are always in the list.
+        """
+        with self._lock:
+            newest_first = tuple(reversed(self._statuses.values()))
+        return newest_first[:MAX_LISTED_RUNS]
 
     def status(self, run_id: str) -> RunStatus:
         """The state of a run."""

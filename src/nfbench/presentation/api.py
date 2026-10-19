@@ -89,22 +89,8 @@ def _parse_start(body: object) -> StartRunRequest:
     return StartRunRequest(tuple(models), hotel, tasks, runs)
 
 
-def create_app(
-    service: RunService,
-    token: str,
-    lifespan: Lifespan | None = None,
-    model_service: ModelService | None = None,
-) -> Starlette:
-    """The ASGI application; ``/health`` is open, every other path needs the bearer token."""
-
-    async def health(_: Request) -> Response:
-        return JSONResponse({"status": "ok"})
-
-    async def models(request: Request) -> Response:
-        if not _authorized(request, token):
-            return _problem(401, "unauthorized")
-        installed = await run_in_threadpool(service.installed_models)
-        return JSONResponse({"models": list(installed)})
+def _model_routes(model_service: ModelService | None, token: str) -> list[Route]:
+    """The routes that add, follow, list and delete models (ADR-0005, ADR-0006)."""
 
     async def start_pull(request: Request) -> Response:
         if not _authorized(request, token) or model_service is None:
@@ -148,6 +134,43 @@ def create_app(
             return _problem(502, "model_server_error", str(error))
         return Response(status_code=204)
 
+    async def list_pulls(request: Request) -> Response:
+        if not _authorized(request, token) or model_service is None:
+            return _problem(401, "unauthorized")
+        pulls = await run_in_threadpool(model_service.list_pulls)
+        return JSONResponse({"pulls": [_pull_json(pull) for pull in pulls]})
+
+    return [
+        Route("/models", start_pull, methods=["POST"]),
+        Route("/models/pulls", list_pulls, methods=["GET"]),
+        Route("/models/pulls/{pull_id}", get_pull, methods=["GET"]),
+        Route("/models/{name:path}", delete_model, methods=["DELETE"]),
+    ]
+
+
+def create_app(
+    service: RunService,
+    token: str,
+    lifespan: Lifespan | None = None,
+    model_service: ModelService | None = None,
+) -> Starlette:
+    """The ASGI application; ``/health`` is open, every other path needs the bearer token."""
+
+    async def health(_: Request) -> Response:
+        return JSONResponse({"status": "ok"})
+
+    async def models(request: Request) -> Response:
+        if not _authorized(request, token):
+            return _problem(401, "unauthorized")
+        installed = await run_in_threadpool(service.installed_models)
+        return JSONResponse({"models": list(installed)})
+
+    async def list_runs(request: Request) -> Response:
+        if not _authorized(request, token):
+            return _problem(401, "unauthorized")
+        runs = await run_in_threadpool(service.list_runs)
+        return JSONResponse({"runs": [_status_json(run) for run in runs]})
+
     async def start_run(request: Request) -> Response:
         if not _authorized(request, token):
             return _problem(401, "unauthorized")
@@ -178,10 +201,9 @@ def create_app(
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/models", models, methods=["GET"]),
-        Route("/models", start_pull, methods=["POST"]),
-        Route("/models/pulls/{pull_id}", get_pull, methods=["GET"]),
-        Route("/models/{name:path}", delete_model, methods=["DELETE"]),
+        *_model_routes(model_service, token),
         Route("/runs", start_run, methods=["POST"]),
+        Route("/runs", list_runs, methods=["GET"]),
         Route("/runs/{run_id}", get_run, methods=["GET"]),
     ]
     return Starlette(routes=routes, lifespan=lifespan)
