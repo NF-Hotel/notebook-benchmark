@@ -4,7 +4,7 @@
 | Key | Value |
 | --- | --- |
 | ID | PP-001 |
-| CrossReference | [BC-001], [SA-001], [MIL-001], [MIL-002], [MIL-003], [MIL-004] |
+| CrossReference | [BC-001], [SA-001], [MIL-001], [MIL-002], [MIL-003], [MIL-004], [MIL-005] |
 | Language | en |
 | Domain | it |
 
@@ -12,6 +12,7 @@
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | Proposed | Claude (AI) | S04 | Initial version | [ed03191] |
+| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Added MIL-005 (models added and deleted by an administrator); accepted after RC-018 Go | pending |
 
 ---
 
@@ -32,6 +33,7 @@ Schedules the four phases that turn the benchmark notebook into a service on the
 | Contract and models | [MIL-001] | 2026-10-18 to 2026-10-25 | 2026-10-25 | S01 | none | ADR-0001 (contract), ADR-0002 (models), OpenAPI file | none yet |
 | Benchmark service API | [MIL-002] | 2026-10-25 to 2026-11-08 | 2026-11-08 | S01 | none | HTTP API, run controller, result sender, tests with fakes | none yet |
 | Containers and deploy | [MIL-003] | 2026-11-08 to 2026-11-22 | 2026-11-22 | S01 | none | Dockerfile, Compose with Ollama, model-pull script, smoke test | none yet |
+| Manage models | [MIL-005] | 2026-10-19 to 2026-10-26 | 2026-10-26 | S01 | none | ADR-0005, pull and delete endpoints, progress of a pull, tests with a fake Ollama | none yet |
 | Prove it in the VM | [MIL-004] | 2027-04-16 to 2027-04-23 | 2027-04-23 | S01 | none | One full run from the back office stored and read in the admin page | none yet |
 
 ```plantuml
@@ -58,6 +60,7 @@ Project starts 2026-10-18
 | HTTP API on the benchmark service guarded by a service token, and its client in the web application | MIL-002 (API); NFHotel MIL-020 (client) |
 | Results API, table and admin page in the web application | NFHotel MIL-019 |
 | ADR for the contract between the two services | MIL-001 |
+| Endpoints to pull and delete models, and their client and page in the web application | MIL-005 (service); NFHotel MIL-020 (client and page) |
 | Tests and a smoke test in the VM | MIL-002, MIL-003, MIL-004 |
 
 ## Dependencies
@@ -66,6 +69,8 @@ Project starts 2026-10-18
 MIL-001 -> MIL-002 -> MIL-003 -> MIL-004
 MIL-001 -> NFHotel MIL-019 -> NFHotel MIL-020 -> MIL-004
 ```
+
+MIL-005 follows MIL-002 (the service API) and changes the contract of MIL-001 by a new version of the OpenAPI file (ADR-0005); the model page of NFHotel MIL-020 is built against it.
 
 NFHotel MIL-019 and MIL-020 build against the contract of MIL-001, so a No-Go on MIL-001 moves them and MIL-004. A No-Go on a NFHotel milestone moves only MIL-004.
 
@@ -92,4 +97,5 @@ NFHotel MIL-019 and MIL-020 build against the contract of MIL-001, so a No-Go on
 [MIL-002]: ./milestones/mil-002-benchmark-service-api.md
 [MIL-003]: ./milestones/mil-003-containers-and-deploy.md
 [MIL-004]: ./milestones/mil-004-prove-it-in-the-vm.md
+[MIL-005]: ./milestones/mil-005-manage-models.md
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224

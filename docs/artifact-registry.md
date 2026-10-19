@@ -14,11 +14,11 @@ document of a type. `Primary File` may contain a glob (e.g.
 | BC | Business Case | docs/business-case.md | 002 |
 | SA | Stakeholder Analysis | docs/stakeholder-analysis.md | 002 |
 | PP | Project Plan | docs/project-plan.md | 002 |
-| MIL | Milestone / Gateway | docs/milestones/*.md | 005 |
-| ADR | Architecture Decision Record | docs/adr/adr-*.md | 0005 |
+| MIL | Milestone / Gateway | docs/milestones/*.md | 006 |
+| ADR | Architecture Decision Record | docs/adr/adr-*.md | 0006 |
 | US | User Story | docs/user-stories.md | 002 |
 | UC | Use Case | docs/use-cases/uc-*/uc.md | 002 |
-| RC | SQA Review Record | docs/sqa/reviews/rc-*.md | 018 |
+| RC | SQA Review Record | docs/sqa/reviews/rc-*.md | 021 |
 
 ## Languages
 
