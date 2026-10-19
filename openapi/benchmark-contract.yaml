@@ -1,0 +1,380 @@
+openapi: 3.1.0
+info:
+  title: NFHotel benchmark contract
+  version: 1.0.0
+  description: >-
+    The contract between the NFHotel web application and the benchmark service (ADR-0001).
+    The benchmark service implements the paths tagged `benchmark-service`.
+    The NFHotel web API implements the path tagged `web-api`.
+    Both are called with the service token as a bearer token; the token for each direction is a different secret.
+servers:
+  - url: http://benchmark:8000
+    description: The benchmark service on the internal Docker network `nfhotel-proxy`.
+  - url: http://api:8080
+    description: The NFHotel web API on the internal Docker network.
+security:
+  - serviceToken: []
+tags:
+  - name: benchmark-service
+    description: Called by the NFHotel web application.
+  - name: web-api
+    description: Called by the benchmark service.
+paths:
+  /health:
+    get:
+      tags: [benchmark-service]
+      operationId: getHealth
+      summary: Liveness of the service; needs no token
+      security: []
+      responses:
+        "200":
+          description: The service is up.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /models:
+    get:
+      tags: [benchmark-service]
+      operationId: listModels
+      summary: The models that are installed in Ollama and may be run
+      responses:
+        "200":
+          description: The installed models.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [models]
+                properties:
+                  models:
+                    type: array
+                    items:
+                      type: string
+                    examples:
+                      - ["llama3.2:3b", "qwen2.5:7b"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /runs:
+    post:
+      tags: [benchmark-service]
+      operationId: startRun
+      summary: Queue a run of the chosen models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartRun"
+      responses:
+        "202":
+          description: The run is queued; read its state at `/runs/{run_id}`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunState"
+        "400":
+          description: An unknown or not installed model, an empty list or a value out of range.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          description: A run is active and the queue is full; try again later.
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /runs/{run_id}:
+    get:
+      tags: [benchmark-service]
+      operationId: getRun
+      summary: The state of a run
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: The state of the run.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunState"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: No such run.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/benchmark/results:
+    post:
+      tags: [web-api]
+      operationId: postResult
+      summary: Deliver the result of a finished run; idempotent on `run_id`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunResult"
+      responses:
+        "201":
+          description: A new run was stored.
+        "200":
+          description: The run id was already stored; nothing changed.
+        "400":
+          description: The body does not match this contract or `schema_version` is unknown; nothing was stored.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+components:
+  securitySchemes:
+    serviceToken:
+      type: http
+      scheme: bearer
+      description: >-
+        A secret from the git-ignored env file of the service that is called.
+        A missing or wrong token gets 401.
+  responses:
+    Unauthorized:
+      description: No token or a wrong token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+  schemas:
+    Problem:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: A stable error code, for example `unauthorized` or `model_not_installed`.
+        message:
+          type: string
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        ollama:
+          type: string
+          enum: [up, down]
+    StartRun:
+      type: object
+      required: [models]
+      properties:
+        models:
+          type: array
+          minItems: 1
+          maxItems: 4
+          uniqueItems: true
+          items:
+            type: string
+          description: Installed model names, as Ollama lists them.
+        hotel_analysis:
+          type: boolean
+          default: true
+        deterministic_tasks:
+          type: boolean
+          default: false
+        runs:
+          type: integer
+          minimum: 1
+          maximum: 5
+          default: 1
+          description: Requests per model and task.
+    RunState:
+      type: object
+      required: [run_id, state, delivery, models, queued_at]
+      properties:
+        run_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum: [queued, running, done, failed]
+        delivery:
+          type: string
+          enum: [not_ready, pending, delivered, failed]
+          description: >-
+            `not_ready` until the run is `done`; `pending` while the result waits for the web API;
+            `failed` after the retry window of ADR-0001 has passed (the result stays on the volume).
+        models:
+          type: array
+          items:
+            type: string
+        queued_at:
+          type: string
+          format: date-time
+        started_at:
+          type: [string, "null"]
+          format: date-time
+        finished_at:
+          type: [string, "null"]
+          format: date-time
+        error:
+          type: [string, "null"]
+          description: The reason when `state` is `failed`.
+    Machine:
+      type: object
+      required: [cpu, cpu_cores, memory_mb, os]
+      properties:
+        cpu:
+          type: string
+        cpu_cores:
+          type: integer
+        memory_mb:
+          type: integer
+        gpu:
+          type: [string, "null"]
+          description: The GPU name, or null when the run is on the CPU only.
+        os:
+          type: string
+    Backend:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          examples: [ollama]
+        version:
+          type: [string, "null"]
+    Dataset:
+      type: object
+      required: [name, sha256, rows]
+      properties:
+        name:
+          type: string
+        sha256:
+          type: string
+          pattern: "^[0-9a-f]{64}$"
+        rows:
+          type: integer
+    RunResult:
+      type: object
+      required: [schema_version, run_id, started_at, finished_at, prompt_version, dataset, machine, backend, results]
+      properties:
+        schema_version:
+          type: integer
+          const: 2
+          description: The version of the result record, see `docs/wiki/Results-Schema.md`.
+        run_id:
+          type: string
+          format: uuid
+          description: The key of idempotency.
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        prompt_version:
+          type: string
+        dataset:
+          $ref: "#/components/schemas/Dataset"
+        machine:
+          $ref: "#/components/schemas/Machine"
+        backend:
+          $ref: "#/components/schemas/Backend"
+        results:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/RequestResult"
+    RequestResult:
+      type: object
+      description: One request to one model, exactly the fields of schema version 2.
+      required: [timestamp, session_id, backend, model, analysis_type, run, cold, total_s, completion_tokens]
+      properties:
+        schema_version:
+          type: integer
+          const: 2
+        timestamp:
+          type: string
+          format: date-time
+        session_id:
+          type: string
+        backend:
+          type: string
+        model:
+          type: string
+        task_id:
+          type: [string, "null"]
+        category:
+          type: [string, "null"]
+        analysis_type:
+          type: string
+          enum: [hotel_cancellation, deterministic_task]
+        run:
+          type: integer
+        cold:
+          type: boolean
+        temperature:
+          type: number
+        max_tokens:
+          type: integer
+        runs:
+          type: integer
+        prompt_version:
+          type: string
+        dataset:
+          type: [string, "null"]
+        dataset_hash:
+          type: [string, "null"]
+        dataset_rows:
+          type: [integer, "null"]
+        ttft_s:
+          type: [number, "null"]
+        total_s:
+          type: number
+        completion_tokens:
+          type: integer
+        prompt_tokens:
+          type: [integer, "null"]
+        tokens_per_s:
+          type: [number, "null"]
+        tokens_estimated:
+          type: boolean
+        finish_reason:
+          type: [string, "null"]
+        system_ram_before_mb:
+          type: [number, "null"]
+        system_ram_after_mb:
+          type: [number, "null"]
+        system_ram_peak_mb:
+          type: [number, "null"]
+        gpu_vram_before_mb:
+          type: [number, "null"]
+        gpu_vram_after_mb:
+          type: [number, "null"]
+        gpu_vram_peak_mb:
+          type: [number, "null"]
+        passed:
+          type: [boolean, "null"]
+        response_valid:
+          type: [boolean, "null"]
+        validation_error:
+          type: [string, "null"]
+        output:
+          type: [string, "null"]
+        error:
+          type: [string, "null"]
