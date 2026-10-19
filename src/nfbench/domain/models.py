@@ -26,7 +26,7 @@ class BenchmarkConfig:
     """Settings applied identically to every model in a session."""
 
     temperature: float = 0.0
-    max_tokens: int = 2048
+    max_tokens: int = 8192
     runs: int = 1
     timeout_s: float = 600.0
     hotel_analysis: bool = True

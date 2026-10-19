@@ -50,7 +50,7 @@ In the notebook:
    The file is validated; problems are shown as messages (missing file, invalid or empty CSV,
    missing required columns, unrecognised cancellation values).
 2. **Models** – choose one or more models per available backend.
-3. **Configuration** – temperature (0), max output tokens (2048), runs per model (1), and whether to
+3. **Configuration** – temperature (0), max output tokens (8192), runs per model (1), and whether to
    include the hotel analysis and/or the deterministic tasks.
 4. **Run benchmark** – results are appended to `output/results.jsonl` request by request.
 5. Read the sections: performance (cold vs warm), Python-calculated cancellation statistics,
@@ -106,6 +106,6 @@ lint-imports                # layer contracts
 
 * The cold flag marks the first request per model in a session; if the model was already loaded it is effectively warm.
 * Reasoning models can spend the whole token budget thinking; the answer is then reported as invalid (`finish_reason = length`).
-  Raise *Max output tokens* if that happens. 1024 was too small for a 2B model's answer to this prompt, hence the 2048 default.
+  Raise *Max output tokens* if that happens. 1024 was too small for a 2B model's answer to this prompt; the default is 8192 (8K) so that reasoning models have room to think and still write the answer, at the cost of longer runs (the service timeout stays 600 s).
 * Valid JSON is a format check; whether the interpretation is correct must be judged by reading the responses.
 * Temperature 0 does not guarantee identical outputs across runs or servers.

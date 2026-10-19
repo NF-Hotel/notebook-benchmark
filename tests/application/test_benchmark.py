@@ -150,4 +150,4 @@ def test_truncated_invalid_answer_is_explained_by_finish_reason() -> None:
 
 
 def test_default_max_tokens_leaves_room_for_the_json_answer() -> None:
-    assert BenchmarkConfig().max_tokens == 2048
+    assert BenchmarkConfig().max_tokens == 8192

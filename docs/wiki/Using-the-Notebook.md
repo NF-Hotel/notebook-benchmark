@@ -3,7 +3,7 @@
 1. **Environment / backend status** – connectivity and model count per backend.
 2. **Dataset selection** – pick a CSV below `data/` or paste a path; edit the column mapping. Errors (missing file, invalid or empty CSV, missing columns, unrecognised cancellation values) appear as messages.
 3. **Model selection** – one or more models per available backend.
-4. **Benchmark configuration** – temperature (0), max output tokens (2048), runs per model (1), hotel analysis and/or deterministic tasks. Press **Run benchmark**.
+4. **Benchmark configuration** – temperature (0), max output tokens (8192), runs per model (1), hotel analysis and/or deterministic tasks. Press **Run benchmark**.
 5. **Dataset overview** – file, rows, columns, SHA-256 prefix, types, missing values, sample.
 6. **Benchmark execution** – progress and a summary; each request is appended to `output/results.jsonl` immediately.
 7. **Performance results** – TTFT, total time, tokens, tokens/s, cold vs warm. Choose the result set (session) and workload.

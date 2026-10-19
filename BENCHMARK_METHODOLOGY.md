@@ -49,7 +49,7 @@ not the model's own footprint; compare `before`/`peak` differences with care.
 
 ## Configuration recorded with every result
 
-temperature (default 0), max output tokens (default 2048), number of runs (default 1), prompt
+temperature (default 0), max output tokens (default 8192), number of runs (default 1), prompt
 version, dataset file name, SHA-256, row count, column mapping, backend and model, session id, timestamp.
 Every model in a session gets the identical prompt and settings. A temperature of 0 reduces but
 does not guarantee identical outputs across runs or servers.
