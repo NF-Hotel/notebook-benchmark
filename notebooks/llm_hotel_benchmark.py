@@ -121,7 +121,7 @@ def _(Path, bootstrap, discover_csvs, mo, statuses):
         }
     )
     temperature = mo.ui.number(0.0, 2.0, 0.1, value=0.0, label="Temperature")
-    max_tokens = mo.ui.number(64, 32768, 64, value=8192, label="Max output tokens")
+    max_tokens = mo.ui.number(64, 32768, 64, value=32768, label="Max output tokens")
     runs = mo.ui.slider(1, 10, value=1, label="Runs per model", show_value=True)
     include_hotel = mo.ui.checkbox(True, label="Hotel cancellation analysis")
     include_tasks = mo.ui.checkbox(False, label="Deterministic tasks (pass/fail)")
