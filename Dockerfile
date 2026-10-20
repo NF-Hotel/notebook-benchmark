@@ -9,10 +9,15 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
+# The dependencies come from requirements.lock: every version is pinned with its hashes and only
+# wheels are installed, so no setup script of a package runs at build time. Regenerate it with
+#   pip-compile --generate-hashes --strip-extras --allow-unsafe --output-file=requirements.lock pyproject.toml
+# in a python:3.13-slim container. The service itself is not installed; its source is on PYTHONPATH.
 WORKDIR /app
-COPY pyproject.toml README.md ./
+COPY requirements.lock ./
+RUN pip install --only-binary :all: --require-hashes --no-deps -r requirements.lock
 COPY src ./src
-RUN pip install .
+ENV PYTHONPATH=/app/src
 
 # The synthetic example dataset; mount a real dataset and set NFBENCH_DATASET to use it.
 COPY data/example ./data/example
