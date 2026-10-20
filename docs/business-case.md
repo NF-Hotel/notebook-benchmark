@@ -12,7 +12,7 @@
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Deprecated | Claude (AI) | AI at the request of S04, not independent | Amended: objective 8 (an administrator sees the runs and the model downloads that the service knows, also after a page refresh), one scope item and success criterion 11; accepted after RC-022 Go | [ced9a43] |
-| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Amended: objective 9 (an administrator compares the summaries that the models wrote for the same hotel analysis); accepted by the user in chat on 2026-10-20 after RC-026 Go | pending |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Amended: objective 9 (an administrator compares the summaries that the models wrote for the same hotel analysis); accepted by the user in chat on 2026-10-20 after RC-026 Go | [45cab68] |
 
 ---
 
@@ -158,3 +158,4 @@ Proceed.
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
 [ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42
+[45cab68]: https://github.com/NF-Hotel/notebook-benchmark/commit/45cab68a3ddd33cdfd6c26e2ecf3e7d07e419bf2

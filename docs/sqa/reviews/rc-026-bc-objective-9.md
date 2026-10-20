@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Initial version | pending |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Initial version | [45cab68] |
 
 ---
 
@@ -66,3 +66,4 @@ Go — every criterion of QC-BC-001 passes after the review added success criter
 [BC-001]: ../business-case.md
 [QC-BC-001]: ../../framework/qc/artifacts/qc-business-case.md
 [QC-LANG-001]: ../../framework/qc/artifacts/qc-language-domain.md
+[45cab68]: https://github.com/NF-Hotel/notebook-benchmark/commit/45cab68a3ddd33cdfd6c26e2ecf3e7d07e419bf2

@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [871f21c] |
 | 2026-10-19 | Deprecated | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-012 Go (Go with conditions) | [871f21c] |
-| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Added US-001.03 (compare the summaries of the models); accepted by the user in chat on 2026-10-20 after RC-027 Go | pending |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Added US-001.03 (compare the summaries of the models); accepted by the user in chat on 2026-10-20 after RC-027 Go | [45cab68] |
 
 ---
 
@@ -81,3 +81,4 @@ The three stories are independent (a run can be read without a second one), nego
 [MIL-007]: ./milestones/mil-007-compare-model-summaries.md
 [UC-001]: ./use-cases/uc-001/uc.md
 [871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99
+[45cab68]: https://github.com/NF-Hotel/notebook-benchmark/commit/45cab68a3ddd33cdfd6c26e2ecf3e7d07e419bf2

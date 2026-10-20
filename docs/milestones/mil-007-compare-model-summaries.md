@@ -11,7 +11,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Initial version; accepted by the user in chat on 2026-10-20 after RC-028 Go | pending |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Initial version; accepted by the user in chat on 2026-10-20 after RC-028 Go | [45cab68] |
 
 ---
 
@@ -80,3 +80,4 @@ Let an administrator read the summaries that the models wrote for the same hotel
 [SA-001]: ../stakeholder-analysis.md
 [MIL-006]: ./mil-006-list-runs-and-downloads.md
 [US-001]: ../user-stories.md
+[45cab68]: https://github.com/NF-Hotel/notebook-benchmark/commit/45cab68a3ddd33cdfd6c26e2ecf3e7d07e419bf2
