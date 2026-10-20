@@ -62,7 +62,7 @@ Let an administrator read the summaries that the models wrote for the same hotel
 
 ## Target Date
 
-2026-11-06 — about two weeks from the plan, so that the model for the market analysis (NFHotel MIL-027) can be chosen on summaries; for S01 to confirm.
+2026-11-06 — about two weeks from the plan, so that the model for the market analysis (NFHotel MIL-028) can be chosen on summaries; for S01 to confirm.
 
 ## Tasks
 
