@@ -12,7 +12,8 @@
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-19 | Proposed | Claude (AI) | S04 | Initial version | [871f21c] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-012 Go (Go with conditions) | [871f21c] |
+| 2026-10-19 | Deprecated | Claude (AI) | AI at the request of S04, not independent | Accepted after RC-012 Go (Go with conditions) | [871f21c] |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Added US-001.03 (compare the summaries of the models); accepted by the user in chat on 2026-10-20 after RC-027 Go | pending |
 
 ---
 
@@ -50,9 +51,24 @@ Covers the epics of the benchmark service that an administrator (S06) meets: sta
 | --- | --- | --- | --- | --- |
 | [MIL-004] (NFHotel MIL-019) | fits one iteration | none | Must | The point of the service is a result that is kept |
 
+### US-001.03 — Compare the summaries of the models
+
+**As an** Administrator of the back office (S06), **I want** to read the summary that each model wrote for the same hotel analysis next to the others, with the measurements of that answer, **so that** I can choose a model for the market analysis on the quality of its text and not on speed alone.
+
+**Acceptance Criteria**
+
+- Given a run of the hotel analysis with two or more models has finished, when I open the comparison, then I see the `summary` of each model side by side for the same prompt, with the characters, the completion tokens, the finish reason, whether the answer was valid and the tokens per second.
+- Given an answer was cut off at the maximum output tokens or was not valid JSON, when I open the comparison, then its column says so and shows the raw text instead of a summary.
+- Given the run had several repetitions, when I open the comparison, then I choose which repetition to read.
+- Given a result with no hotel analysis, when I open the comparison, then I am told there is nothing to compare.
+
+| Traces to | Size | INVEST exceptions | Priority (MoSCoW) | Reason |
+| --- | --- | --- | --- | --- |
+| Objective 9 of [BC-001], [MIL-007] | fits one iteration | none | Should | The choice of the default model of the market analysis (NFHotel ADR-0014) rests on the text a model writes |
+
 ## INVEST Check
 
-Both stories are independent (a run can be read without a second one), negotiable in the options a run offers, valuable to S06, estimable, small and testable with the acceptance criteria above. No exception.
+The three stories are independent (a run can be read without a second one), negotiable in the options a run offers, valuable to S06, estimable, small and testable with the acceptance criteria above. No exception.
 
 ---
 
@@ -62,5 +78,6 @@ Both stories are independent (a run can be read without a second one), negotiabl
 [MIL-002]: ./milestones/mil-002-benchmark-service-api.md
 [MIL-003]: ./milestones/mil-003-containers-and-deploy.md
 [MIL-004]: ./milestones/mil-004-prove-it-in-the-vm.md
+[MIL-007]: ./milestones/mil-007-compare-model-summaries.md
 [UC-001]: ./use-cases/uc-001/uc.md
 [871f21c]: https://github.com/NF-Hotel/notebook-benchmark/commit/871f21c4273b7c045a39fc3e8209d1ade8b4df99
