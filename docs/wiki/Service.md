@@ -36,6 +36,10 @@ The calls run inside the benchmark container. The run uses the first installed m
 
 Start a run with `POST /runs` and read it with `GET /runs/{id}` (see the OpenAPI file). Results that the web API has not yet accepted are in the volume `results`, folder `pending/`; delivered ones are in `delivered/`, abandoned ones in `failed/`. The file `results.jsonl` in the same volume holds the same rows in the notebook's format.
 
+## Read the summaries of a run
+
+`GET /runs/{id}/summaries` returns the `summary` that each model wrote for the hotel analysis of a finished run, one entry per model, with the characters, completion tokens, tokens per second and finish reason of its answer. `?run=N` picks the repetition as numbered in the result (the first is 0); without it the first repetition is read. An answer that was cut off at the maximum output tokens, was empty or is not valid JSON has `summary` null, a `problem` and its `raw_output`. A result without a hotel analysis gives no entries and a `message`. The route needs the service token like the others: 401 without it, 404 for an unknown run, 409 (`result_not_ready`) for a run that has no result yet (queued, running or failed), and 400 when `run` is not a whole number. It reads the stored result, so it works after the web API has accepted the run and after a restart. The notebook shows the same comparison in section 10.
+
 ## Troubleshooting
 
 | Symptom | Cause and fix |

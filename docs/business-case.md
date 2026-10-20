@@ -11,9 +11,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-18 | Accepted | Claude (AI) | AI at the request of S04, not independent | Initial version | [ed03191] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 7 (an administrator adds and deletes Ollama models through the service), one scope item and success criterion 10; accepted after RC-018 Go | [b4a507d] |
-| 2026-10-19 | Accepted | Claude (AI) | AI at the request of S04, not independent | Amended: objective 8 (an administrator sees the runs and the model downloads that the service knows, also after a page refresh), one scope item and success criterion 11; accepted after RC-022 Go | [ced9a43] |
+| 2026-10-19 | Deprecated | Claude (AI) | AI at the request of S04, not independent | Amended: objective 8 (an administrator sees the runs and the model downloads that the service knows, also after a page refresh), one scope item and success criterion 11; accepted after RC-022 Go | [ced9a43] |
+| 2026-10-20 | Accepted | Claude (AI) | AI at the request of the user, not independent | Amended: objective 9 (an administrator compares the summaries that the models wrote for the same hotel analysis); accepted by the user in chat on 2026-10-20 after RC-026 Go | [45cab68] |
 
 ---
 
@@ -46,6 +45,7 @@ If the benchmark runs as a service on the VM, an administrator can start it, wai
 6. Keep the notebook and `output/results.jsonl` working, with the same result schema, so that local and VM runs are comparable.
 7. Let an administrator install a further Ollama model, for example `phi4-mini`, and delete an installed one, from the back office through the benchmark service, so the set of models is not fixed by the pull script (the pull and the delete are calls of the service to the Ollama of the VM).
 8. Let an administrator see, at any time and from any browser, which runs are queued or running and which model downloads are active, with their state, and let the page follow a change of state without a refresh, so that nothing depends on the browser session that started the work.
+9. Let an administrator read the summaries that the models wrote for the same hotel analysis side by side, with the measurements of each answer, so that the choice of the model for the market analysis rests on the quality of the text and not on speed alone.
 
 ## Scope
 
@@ -101,6 +101,7 @@ The NFHotel Business Case (objective 7) puts the benchmark service on a Proxmox 
 | 9 | Quality gate | 0 build or lint errors, `mypy --strict` clean, all tests pass in both repositories | CI and local run |
 | 10 | Models managed by an administrator | A model that is not installed is pulled from the back office and then can be chosen for a run; an installed model is deleted from the back office; a delete of a model that a queued or running run uses is refused | Contract and service tests, and one real pull and delete in the VM |
 | 11 | Work that is in progress is visible | After a refresh of the page, or from another browser, the queued and running runs and the active download are listed with their state, and a change of state shows within 5 seconds without a refresh | Service and contract tests, and a check in the VM |
+| 12 | Summaries compared | For one session of the hotel analysis with two or more models, the summary of each model is shown side by side with its measurements; an answer that was cut off or not valid says so and shows its raw text | Unit tests of the comparison and the contract test of `GET /runs/{id}/summaries` |
 
 ## Risks
 
@@ -157,3 +158,4 @@ Proceed.
 [ed03191]: https://github.com/NF-Hotel/notebook-benchmark/commit/ed0319185c76fb34b5933731b3889b267c557224
 [b4a507d]: https://github.com/NF-Hotel/notebook-benchmark/commit/b4a507d7062e24151cfc8aaa175c15d324dd1317
 [ced9a43]: https://github.com/NF-Hotel/notebook-benchmark/commit/ced9a43ed010056f56f5905fb2b62b399b7e9e42
+[45cab68]: https://github.com/NF-Hotel/notebook-benchmark/commit/45cab68a3ddd33cdfd6c26e2ecf3e7d07e419bf2

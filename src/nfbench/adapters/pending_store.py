@@ -4,11 +4,19 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from pathlib import Path
 
 from nfbench.application.ports import Payload
 
 logger = logging.getLogger(__name__)
+
+_RUN_ID = re.compile(r"[A-Za-z0-9-]{1,64}")
+
+
+def _is_run_id(value: str) -> bool:
+    """A run id is a short word of letters, digits and hyphens, so it cannot name another folder."""
+    return _RUN_ID.fullmatch(value) is not None
 
 
 class FilePendingStore:
@@ -44,6 +52,20 @@ class FilePendingStore:
     def mark_failed(self, run_id: str) -> None:
         """Give up; the file stays for a manual send."""
         self._move(run_id, "failed")
+
+    def find(self, run_id: str) -> Payload | None:
+        """The result of a run from ``pending/``, ``delivered/`` or ``failed/``; None if absent."""
+        if not _is_run_id(run_id):
+            return None
+        for folder in ("pending", "delivered", "failed"):
+            path = self._root / folder / f"{run_id}.json"
+            try:
+                body = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if isinstance(body, dict):
+                return body
+        return None
 
     def _move(self, run_id: str, folder: str) -> None:
         source = self._root / "pending" / f"{run_id}.json"

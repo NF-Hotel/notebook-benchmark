@@ -75,8 +75,8 @@ def test_the_name_pattern_of_the_contract_is_the_pattern_of_the_service(
     assert re.fullmatch(schema["pattern"], "phi4-mini:latest") is not None
 
 
-def test_the_version_of_the_contract_is_one_point_two(contract: dict[str, Any]) -> None:
-    assert contract["info"]["version"] == "1.2.0"
+def test_the_version_of_the_contract_is_one_point_three(contract: dict[str, Any]) -> None:
+    assert contract["info"]["version"] == "1.3.0"
 
 
 def test_the_lists_are_arrays_of_the_single_read_objects(contract: dict[str, Any]) -> None:

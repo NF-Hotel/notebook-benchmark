@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from nfbench.application.delivery import DeliveryService
@@ -9,6 +11,7 @@ from nfbench.domain.errors import (
     ModelInUseError,
     ModelNotInstalledError,
     QueueFullError,
+    ResultNotReadyError,
     RunNotFoundError,
 )
 from nfbench.domain.service import (
@@ -282,3 +285,57 @@ def test_list_runs_keeps_the_newest_twenty() -> None:
 
     assert len(listed) == MAX_LISTED_RUNS
     assert [run.run_id for run in listed] == list(reversed(ids))[:MAX_LISTED_RUNS]
+
+
+def _answer(summary: str) -> str:
+    return json.dumps(
+        {
+            "summary": summary,
+            "overall_cancellation": {"rate": 0.37, "interpretation": "i"},
+            "direct_customers": {"rate": 0.3, "interpretation": "i"},
+            "agent_bookings": {"rate": 0.4, "interpretation": "i"},
+            "key_findings": ["a"],
+            "limitations": ["b"],
+        }
+    )
+
+
+def test_summaries_of_a_finished_run_come_from_the_stored_result() -> None:
+    parts = _Parts()
+    parts.executor.answers = {
+        "m1": (_answer("m1 says so."), "stop"),
+        "m2": ('{"summary": "Canc', "length"),
+    }
+    run_id = parts.service.start(_request("m1", "m2")).run_id
+    parts.service.tick()
+
+    comparison = parts.service.summaries(run_id)
+
+    assert comparison.run == 0
+    assert [(e.model, e.summary) for e in comparison.entries] == [
+        ("m1", "m1 says so."),
+        ("m2", None),
+    ]
+    assert comparison.entries[1].problem == "cut off at the maximum output tokens"
+
+
+def test_summaries_of_an_unknown_run_raise_run_not_found() -> None:
+    with pytest.raises(RunNotFoundError):
+        _Parts().service.summaries("ghost")
+
+
+def test_summaries_of_a_run_that_has_no_result_yet_raise_result_not_ready() -> None:
+    parts = _Parts()
+    run_id = parts.service.start(_request("m1")).run_id
+
+    with pytest.raises(ResultNotReadyError):
+        parts.service.summaries(run_id)
+
+
+def test_summaries_of_a_run_that_failed_raise_result_not_ready() -> None:
+    parts = _Parts(fail_with="boom")
+    run_id = parts.service.start(_request("m1")).run_id
+    parts.service.tick()
+
+    with pytest.raises(ResultNotReadyError):
+        parts.service.summaries(run_id)

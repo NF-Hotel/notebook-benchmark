@@ -27,6 +27,10 @@ class RunNotFoundError(Exception):
     """No run has the given id."""
 
 
+class ResultNotReadyError(Exception):
+    """The run exists but has no result yet (it is queued or running, or it failed)."""
+
+
 class InvalidModelNameError(Exception):
     """A model name does not look like the name of an Ollama model (ADR-0005)."""
 

@@ -15,11 +15,13 @@ from nfbench.application.benchmark import HotelInput, ModelSelection
 from nfbench.application.delivery import DeliveryService
 from nfbench.application.payload import build_result_payload
 from nfbench.application.ports import BenchmarkExecutor, MachineInspector, ModelCatalog
+from nfbench.application.summary_comparison import compare_summaries
 from nfbench.domain.errors import (
     InvalidRunRequestError,
     ModelInUseError,
     ModelNotInstalledError,
     QueueFullError,
+    ResultNotReadyError,
     RunNotFoundError,
 )
 from nfbench.domain.models import BenchmarkConfig
@@ -33,6 +35,7 @@ from nfbench.domain.service import (
     RunStatus,
     StartRunRequest,
 )
+from nfbench.domain.summaries import SummaryComparison
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +114,20 @@ class RunService:
                 return self._statuses[run_id]
             except KeyError as error:
                 raise RunNotFoundError(run_id) from error
+
+    def summaries(self, run_id: str, run: int | None = None) -> SummaryComparison:
+        """The summaries that the models wrote in a run, for one repetition (MIL-007).
+
+        The result is read from the store, so it is there after a restart and after delivery.
+        Raises ``RunNotFoundError`` for an unknown run and ``ResultNotReadyError`` for a run that
+        has no result.
+        """
+        payload = self._delivery.payload(run_id)
+        if payload is None:
+            self.status(run_id)
+            raise ResultNotReadyError(run_id)
+        records = payload.get("results")
+        return compare_summaries(records if isinstance(records, list) else [], run)
 
     def restore(self) -> None:
         """Pick up results that were not delivered before a restart."""

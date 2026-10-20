@@ -17,6 +17,7 @@ def _():
     from nfbench.adapters.hotel_analysis import analyse
     from nfbench.application.benchmark import HotelInput, ModelSelection
     from nfbench.application.response_parsing import validate_hotel_response
+    from nfbench.application.summary_comparison import compare_summaries
     from nfbench.domain.errors import DatasetError
     from nfbench.domain.models import BenchmarkConfig, ColumnMapping
     from nfbench.domain.tasks import TASKS
@@ -35,6 +36,7 @@ def _():
         analyse,
         backends,
         bootstrap,
+        compare_summaries,
         discover_csvs,
         load_dataset,
         mo,
@@ -653,6 +655,61 @@ def _(hotel_rows, mo, pl, response_pick, summary, validate_hotel_response):
 
 
 @app.cell
+def _(compare_summaries, mo, view):
+    _records = view.to_dicts()
+    _first = compare_summaries(_records)
+    mo.stop(
+        not _first.runs,
+        mo.md(f"## 10. Compare the summaries\n_{_first.message}_"),
+    )
+    summary_run_pick = mo.ui.dropdown(
+        {f"Run {_n + 1}": _n for _n in _first.runs},
+        value=f"Run {_first.runs[0] + 1}",
+        label="Repetition",
+    )
+    mo.vstack(
+        [
+            mo.md("## 10. Compare the summaries"),
+            mo.md(
+                "The `summary` that each model wrote for the same hotel analysis, side by side, "
+                "with the measurements of its answer. An answer that was cut off at the maximum "
+                "output tokens or is not valid JSON has no summary; its raw text is shown instead. "
+                "No model is ranked."
+            ),
+            summary_run_pick,
+        ]
+    )
+    return (summary_run_pick,)
+
+
+@app.cell
+def _(compare_summaries, mo, summary_run_pick, view):
+    _comparison = compare_summaries(view.to_dicts(), summary_run_pick.value)
+    mo.stop(not _comparison.entries, mo.md(f"_{_comparison.message}_"))
+
+    def _column(entry) -> object:
+        _rate = "n/a" if entry.tokens_per_s is None else f"{entry.tokens_per_s:.1f}"
+        _head = mo.md(
+            f"**{entry.model}**\n\n"
+            f"{entry.characters} characters · {entry.completion_tokens} tokens · {_rate} tok/s · "
+            f"finish reason: {entry.finish_reason or 'n/a'}"
+        )
+        if entry.summary is None:
+            return mo.vstack(
+                [
+                    _head,
+                    mo.callout(mo.md(f"No summary: {entry.problem}"), kind="danger"),
+                    mo.accordion(
+                        {"Raw response": mo.md(f"```\n{(entry.raw_output or '')[:6000]}\n```")}
+                    ),
+                ]
+            )
+        return mo.vstack([_head, mo.md(entry.summary)])
+
+    mo.hstack([_column(e) for e in _comparison.entries], align="start", gap=2, wrap=True)
+
+
+@app.cell
 def _(alt, mo, ok, pl):
     mo.stop(ok.is_empty())
     _measures = {"before": "before", "after": "after", "peak": "peak"}
@@ -690,7 +747,7 @@ def _(alt, mo, ok, pl):
 
     mo.vstack(
         [
-            mo.md("## 10. Resource usage"),
+            mo.md("## 11. Resource usage"),
             mo.md(
                 "RAM is **system-wide** used memory and VRAM is total `nvidia-smi` memory in use, sampled every ~0.25 s. "
                 "They include everything running on the machine, not only the model."
@@ -711,7 +768,7 @@ def _(alt, mo, ok, pl):
 def _(mo, view):
     mo.vstack(
         [
-            mo.md("## 11. Raw results"),
+            mo.md("## 12. Raw results"),
             mo.ui.table(view.drop("label", "phase"), selection=None, page_size=10),
         ]
     )
@@ -723,7 +780,7 @@ def _(mo, view):
     mo.vstack(
         [
             mo.md(
-                "## 12. Export\nExports the rows of the current selection. All results remain in `output/results.jsonl`."
+                "## 13. Export\nExports the rows of the current selection. All results remain in `output/results.jsonl`."
             ),
             mo.hstack(
                 [
