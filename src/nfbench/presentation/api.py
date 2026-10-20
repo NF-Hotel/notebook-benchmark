@@ -31,6 +31,7 @@ from nfbench.domain.errors import (
     PullActiveError,
     PullNotFoundError,
     QueueFullError,
+    ResultNotReadyError,
     RunNotFoundError,
 )
 from nfbench.domain.service import PullStatus, RunStatus, StartRunRequest
@@ -198,6 +199,25 @@ def create_app(
             return _problem(404, "run_not_found")
         return JSONResponse(_status_json(status))
 
+    async def get_summaries(request: Request) -> Response:
+        if not _authorized(request, token):
+            return _problem(401, "unauthorized")
+        run_text = request.query_params.get("run")
+        run: int | None = None
+        if run_text is not None:
+            if not run_text.isdecimal():
+                return _problem(400, "invalid_request", "run must be a whole number from 0")
+            run = int(run_text)
+        try:
+            comparison = await run_in_threadpool(
+                service.summaries, request.path_params["run_id"], run
+            )
+        except RunNotFoundError:
+            return _problem(404, "run_not_found")
+        except ResultNotReadyError:
+            return _problem(409, "result_not_ready", "the run has no result yet")
+        return JSONResponse(comparison.to_dict())
+
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/models", models, methods=["GET"]),
@@ -205,5 +225,6 @@ def create_app(
         Route("/runs", start_run, methods=["POST"]),
         Route("/runs", list_runs, methods=["GET"]),
         Route("/runs/{run_id}", get_run, methods=["GET"]),
+        Route("/runs/{run_id}/summaries", get_summaries, methods=["GET"]),
     ]
     return Starlette(routes=routes, lifespan=lifespan)

@@ -52,6 +52,10 @@ class DeliveryService:
         self._store.save(run_id, payload)
         self._schedule(run_id, payload)
 
+    def payload(self, run_id: str) -> Payload | None:
+        """The stored result of a run, delivered or not; None if there is none."""
+        return self._store.find(run_id)
+
     def restore(self) -> list[str]:
         """Pick up the results that were not delivered before a restart."""
         restored = []

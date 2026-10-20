@@ -24,7 +24,13 @@ MACHINE = MachineInfo("Test CPU", 4, 8192, None, "Linux")
 BACKEND = BackendInfo("ollama", "0.5.1")
 
 
-def make_result(model: str = "m1", run: int = 0, cold: bool = True) -> RunResult:
+def make_result(
+    model: str = "m1",
+    run: int = 0,
+    cold: bool = True,
+    output: str = "{}",
+    finish_reason: str | None = None,
+) -> RunResult:
     """A finished request with the fields of schema version 2."""
     return RunResult(
         backend="ollama",
@@ -40,7 +46,7 @@ def make_result(model: str = "m1", run: int = 0, cold: bool = True) -> RunResult
         tokens_per_s=5.0,
         tokens_estimated=False,
         passed=None,
-        output="{}",
+        output=output,
         error=None,
         analysis_type="hotel_cancellation",
         session_id="s1",
@@ -53,6 +59,7 @@ def make_result(model: str = "m1", run: int = 0, cold: bool = True) -> RunResult
         dataset_hash="a" * 64,
         dataset_rows=10,
         response_valid=True,
+        finish_reason=finish_reason,
     )
 
 
@@ -126,8 +133,13 @@ class FakeInspector:
 class FakeExecutor:
     """Returns one result per selected model, or raises."""
 
-    def __init__(self, fail_with: str | None = None) -> None:
+    def __init__(
+        self,
+        fail_with: str | None = None,
+        answers: dict[str, tuple[str, str | None]] | None = None,
+    ) -> None:
         self.fail_with = fail_with
+        self.answers = answers or {}  # model -> (output, finish_reason)
         self.calls: list[tuple[list[str], BenchmarkConfig]] = []
 
     def run(
@@ -137,7 +149,11 @@ class FakeExecutor:
         self.calls.append((models, config))
         if self.fail_with:
             raise RuntimeError(self.fail_with)
-        return [make_result(model) for model in models]
+        return [
+            make_result(model, output=out, finish_reason=reason)
+            for model in models
+            for out, reason in [self.answers.get(model, ("{}", None))]
+        ]
 
 
 class FakeSender:
@@ -172,6 +188,9 @@ class MemoryPendingStore:
 
     def mark_failed(self, run_id: str) -> None:
         self.failed.append(run_id)
+
+    def find(self, run_id: str) -> Payload | None:
+        return self.items.get(run_id)
 
 
 class FakeEpoch:

@@ -9,8 +9,9 @@
 7. **Performance results** – TTFT, total time, tokens, tokens/s, cold vs warm. Choose the result set (session) and workload.
 8. **Hotel cancellation analysis** – Python-calculated overall / direct / agent rates and breakdowns.
 9. **LLM analysis comparison** – metrics table and model responses side by side next to the calculated values.
-10. **Resource usage** – system RAM and GPU VRAM before / after / peak.
-11. **Raw results** – every row of the selection.
-12. **Export** – CSV or JSON of the current selection.
+10. **Compare the summaries** – the `summary` that each model wrote for the same hotel analysis, side by side, with the characters, tokens, tokens/s and finish reason of its answer. Choose the repetition. An answer that was cut off at the maximum output tokens or is not valid JSON has no summary: the column says why and holds the raw text. No model is ranked.
+11. **Resource usage** – system RAM and GPU VRAM before / after / peak.
+12. **Raw results** – every row of the selection.
+13. **Export** – CSV or JSON of the current selection.
 
 The pass/fail heatmap for the deterministic tasks appears under section 7 when they were run.

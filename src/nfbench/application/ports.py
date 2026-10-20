@@ -127,6 +127,10 @@ class PendingResultStore(Protocol):
         """Give up sending; the result stays available for a manual send."""
         ...
 
+    def find(self, run_id: str) -> Payload | None:
+        """The result of a run, pending, delivered or failed; None if there is none."""
+        ...
+
 
 class BenchmarkExecutor(Protocol):
     """Runs the models through the benchmark use case."""

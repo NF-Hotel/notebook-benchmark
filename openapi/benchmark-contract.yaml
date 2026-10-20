@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NFHotel benchmark contract
-  version: 1.2.0
+  version: 1.3.0
   description: >-
     The contract between the NFHotel web application and the benchmark service (ADR-0001).
     The benchmark service implements the paths tagged `benchmark-service`.
@@ -267,6 +267,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /runs/{run_id}/summaries:
+    get:
+      tags: [benchmark-service]
+      operationId: getRunSummaries
+      summary: The summaries that the models wrote for the hotel analysis of a run (MIL-007)
+      description: >-
+        One entry per model for one repetition, in the order of the run. An answer that was cut off at
+        the maximum output tokens or is not valid has no `summary`; its `problem` says why and its
+        `raw_output` holds the text. A result without a hotel analysis gives no entries and a `message`.
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: run
+          in: query
+          required: false
+          description: The repetition to read, as numbered in the result (the first is 0); the first repetition of the result when left out.
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: The comparison.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryComparison"
+        "400":
+          description: "`run` is not a whole number from 0."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: No such run.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: "The run has no result yet (code `result_not_ready`)."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api/benchmark/results:
     post:
       tags: [web-api]
@@ -326,6 +376,44 @@ components:
         ollama:
           type: string
           enum: [up, down]
+    SummaryEntry:
+      type: object
+      required: [model, run, summary, characters, completion_tokens, tokens_per_s, finish_reason, valid, problem, raw_output]
+      properties:
+        model: {type: string}
+        run: {type: integer, minimum: 0}
+        summary:
+          type: [string, "null"]
+          description: The `summary` field of the answer; null when the answer has none.
+        characters: {type: integer, minimum: 0}
+        completion_tokens: {type: integer, minimum: 0}
+        tokens_per_s: {type: [number, "null"]}
+        finish_reason: {type: [string, "null"]}
+        valid: {type: boolean}
+        problem:
+          type: [string, "null"]
+          description: Why there is no summary, for example `cut off at the maximum output tokens`.
+        raw_output:
+          type: [string, "null"]
+          description: The text that the model wrote, present only when there is no summary.
+    SummaryComparison:
+      type: object
+      required: [run, runs, entries, message]
+      properties:
+        run:
+          type: [integer, "null"]
+          description: The repetition that the entries are from; null when there is none.
+        runs:
+          type: array
+          description: The repetitions of the hotel analysis that the result has.
+          items: {type: integer, minimum: 0}
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/SummaryEntry"
+        message:
+          type: [string, "null"]
+          description: Set when there is nothing to compare.
     StartRun:
       type: object
       required: [models]
